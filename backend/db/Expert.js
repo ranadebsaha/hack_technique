@@ -28,9 +28,20 @@ const expertSchema = new mongoose.Schema({
   district: String,
   state: String,
   pincode: String,
-  education: String, 
-  experience: String, 
-  whyJoin: String, 
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  },
+  education: String,
+  experience: String,
+  whyJoin: String,
   rating: {
     type: String,
     default: '0',
@@ -47,7 +58,7 @@ const expertSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  password:String,
+  password: String,
   date: {
     type: Date,
     default: Date.now,
@@ -74,5 +85,6 @@ const expertSchema = new mongoose.Schema({
     },
   ],
 });
+expertSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('experts', expertSchema);
