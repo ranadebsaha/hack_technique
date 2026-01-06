@@ -162,31 +162,7 @@ app.post('/expert/login', async (req, resp) => {
     }
 });
 
-//One Expert Fetch
-app.get('/expert/:id', verifyToken, async (req, resp) => {
-    let result = await Expert.findOne({ _id: req.params.id });
-    if (result) {
-        resp.send(result);
-    } else {
-        resp.send({ result: 'no record found' });
-    }
-});
 
-
-//update expert details
-app.put('/expert/update/:id',verifyToken, async (req, resp) => {
-    if(req.body){
-        let result = await Expert.updateOne(
-            { _id: req.params.id },
-            {
-                $set: req.body
-            }
-        )
-        resp.send(result);
-    }else{
-        resp.send({ result: 'Please enter details' });
-    }
-});
 
 //Book Appointment with login
 app.post('/service',verifyToken, async (req, resp) => {
@@ -361,6 +337,32 @@ app.get('/expert/all', verifyToken, async (req, resp) => {
         resp.send(result);
     } else {
         resp.send({ result: 'no record found' });
+    }
+});
+
+//One Expert Fetch
+app.get('/expert/:id', verifyToken, async (req, resp) => {
+    let result = await Expert.findOne({ _id: req.params.id });
+    if (result) {
+        resp.send(result);
+    } else {
+        resp.send({ result: 'no record found' });
+    }
+});
+
+
+//update expert details
+app.put('/expert/update/:id',verifyToken, async (req, resp) => {
+    if(req.body){
+        let result = await Expert.updateOne(
+            { _id: req.params.id },
+            {
+                $set: req.body
+            }
+        )
+        resp.send(result);
+    }else{
+        resp.send({ result: 'Please enter details' });
     }
 });
 
