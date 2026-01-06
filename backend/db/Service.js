@@ -18,6 +18,17 @@ const serviceSchema = new mongoose.Schema({
   state: String,
   feedback: String,
   rating:String,
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      required: false
+    }
+  },
   female_preference: {
     type: Boolean,
     default: false,
@@ -41,5 +52,7 @@ const serviceSchema = new mongoose.Schema({
     type: String,
   },
 });
+
+serviceSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model("services", serviceSchema);
