@@ -1,202 +1,281 @@
+import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { HelpCircle, MessageSquare, Phone, Mail } from "lucide-react";
+import {
+    HelpCircle,
+    MessageSquare,
+    Phone,
+    Mail,
+    Search,
+    Plus,
+    Minus,
+    ChevronDown,
+    ArrowRight
+} from "lucide-react";
+
+interface FAQItem {
+    question: string;
+    answer: string;
+    category: string;
+}
 
 const FAQ = () => {
-    const generalFaqs = [
+    const [searchTerm, setSearchTerm] = useState("");
+    const [activeCategory, setActiveCategory] = useState("all");
+    const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+    const allFaqs: FAQItem[] = [
+        // General
         {
             question: "What is Cyber Bandhu?",
-            answer: "Cyber Bandhu is an affordable, secure doorstep digital assistance service for students in rural and semi-urban India. We help with online form filling, college admissions, scholarship applications, and other digital tasks that students may find challenging.",
+            answer: "Cyber Bandhu is an affordable, secure doorstep digital assistance service for students in rural and semi-urban India. We help with online form filling, college admissions, scholarship applications, and other digital tasks.",
+            category: "general"
         },
         {
             question: "Who can use Cyber Bandhu services?",
-            answer: "Our services are designed primarily for students who have passed 10th or 12th standard and reside in rural or semi-urban areas with limited digital access or literacy. However, we're happy to assist anyone who needs help with digital tasks.",
+            answer: "Our services are designed primarily for students in rural or semi-urban areas with limited digital access. However, we're happy to assist anyone who needs help with digital tasks, regardless of age or background.",
+            category: "general"
         },
         {
             question: "How do I book a service?",
-            answer: "You can book a service through our website, mobile app, or by calling our toll-free number. Simply select the service you need, choose your preferred date and time, and provide your location details. We'll confirm your booking and send a Digital Assistant to your location.",
+            answer: "You can book a service through our website, mobile app, or by calling our toll-free number. Simply select the service you need, choose your preferred date and time, and we'll confirm your booking instantly.",
+            category: "general"
         },
         {
             question: "Do you operate in my area?",
-            answer: "We're continuously expanding our services across rural and semi-urban areas in India. Please check our service availability by entering your location on our website or contacting our support team. If we're not in your area yet, you can join our waitlist.",
+            answer: "We're continuously expanding across rural and semi-urban India. You can check availability by entering your pincode on our home page. If we're not there yet, join our waitlist!",
+            category: "general"
+        },
+        // Services
+        {
+            question: "What specific services do you offer?",
+            answer: "We offer a wide range of services: College Application Filling, Scholarship Applications, Entrance Exam Registrations, Government Scheme Enrollments, Resume Building, and basic Digital Literacy training.",
+            category: "services"
         },
         {
-            question: "Can I request a specific Digital Assistant?",
-            answer: "Yes, if you've worked with a specific Digital Assistant before and would like to request them again, you can mention their name during the booking process. We'll try our best to accommodate your request based on their availability.",
-        },
-    ];
-
-    const serviceFaqs = [
-        {
-            question: "What services does Cyber Bandhu offer?",
-            answer: "We offer a wide range of digital assistance services including form filling for college applications, scholarship applications, career guidance, college admissions help, digital safety training, job applications assistance, digital literacy training, and financial services assistance.",
+            question: "How long does a session take?",
+            answer: "Basic forms take 30-45 minutes. Complex applications (like college admissions with multiple document uploads) may take 1-2 hours. We'll give you a time estimate before we start.",
+            category: "services"
         },
         {
-            question: "How long does a typical service session take?",
-            answer: "The duration depends on the complexity of the service. Basic form filling may take 30-60 minutes, while comprehensive college application assistance could take 1-2 hours. We'll always inform you about the expected duration before starting the service.",
+            question: "What documents do I need?",
+            answer: "Generally, keep your Aadhaar card, mark sheets (10th/12th), passport photos, and signature scans ready. For specific applications, we'll send you a checklist beforehand.",
+            category: "services"
+        },
+        // Pricing
+        {
+            question: "How is the pricing decided?",
+            answer: "We have fixed, transparent rates starting at ₹99. The price depends on the complexity of the task (e.g., a simple form vs. a complex multi-stage application). You will always see the full price before booking.",
+            category: "pricing"
         },
         {
-            question: "What documents do I need to have ready?",
-            answer: "For most services, you should have your ID proof (Aadhaar, PAN card), educational certificates/mark sheets, passport-sized photographs, and any specific documents required for the application you're filling. Our confirmation message will include a checklist of required documents.",
-        },
-        {
-            question: "Can you help with specific college applications?",
-            answer: "Yes, our Digital Assistants are trained to help with applications for a wide range of colleges and universities. We have specialized knowledge about various educational institutions and their application processes.",
-        },
-        {
-            question: "Do you provide content for personal statements or essays?",
-            answer: "We can guide you on structuring your personal statements or essays and help you express your thoughts clearly. However, the content should be your own authentic expression. We help you present your achievements and aspirations effectively.",
-        },
-    ];
-
-    const pricingFaqs = [
-        {
-            question: "How much do your services cost?",
-            answer: "Our services start at ₹99 for basic assistance. Standard packages cost ₹199, and premium support services are ₹399. The exact price depends on the complexity of the service and the time required. We always provide transparent pricing before starting any service.",
-        },
-        {
-            question: "Are there any hidden charges?",
-            answer: "No, we believe in complete transparency. The price quoted at the time of booking is what you pay. If any service requires additional time or resources, we'll inform you and get your approval before proceeding.",
-        },
-        {
-            question: "Do you offer any discounts for multiple services?",
-            answer: "Yes, we offer package discounts when you book multiple services together. We also have special rates for returning customers and referral benefits when you recommend our services to friends and family.",
+            question: "Are there hidden charges?",
+            answer: "Absolutely not. The price you see is the price you pay. Our digital assistants are strictly prohibited from asking for extra money.",
+            category: "pricing"
         },
         {
             question: "What payment methods do you accept?",
-            answer: "We accept cash, UPI payments, debit/credit cards, and mobile wallets. Our Digital Assistants carry portable payment devices for card payments and can assist with digital payment methods if needed.",
+            answer: "We accept UPI (GooglePay, PhonePe, Paytm), Cash on completion, and Debit Cards. You receive a digital receipt immediately after payment.",
+            category: "pricing"
+        },
+        // Privacy
+        {
+            question: "Is my personal data safe?",
+            answer: "Yes, data privacy is our top priority. We do not store your passwords. Your documents are only accessed during the session for the purpose of the application and are not retained on our devices.",
+            category: "privacy"
         },
         {
-            question: "Can I get a refund if I'm not satisfied?",
-            answer: "Yes, we stand behind our services. If you're not satisfied with the assistance provided, please inform us within 24 hours of service completion, and we'll address your concerns or process a refund as appropriate.",
+            question: "How do you verify your assistants?",
+            answer: "Every Cyber Bandhu assistant undergoes a rigorous 3-step verification process: ID check, Address verification, and Police verification. They are also trained in data privacy protocols.",
+            category: "privacy"
         },
     ];
 
-    const privacyFaqs = [
-        {
-            question: "How do you ensure my personal information is safe?",
-            answer: "We take data privacy very seriously. All our Digital Assistants are trained in data protection practices and sign strict confidentiality agreements. We never store your sensitive information like passwords. Our systems are secured with encryption, and we only collect information necessary for providing our services.",
-        },
-        {
-            question: "Do you share my data with third parties?",
-            answer: "We never sell your data to third parties. We only share your information with the necessary institutions (like colleges or scholarship providers) with your explicit permission and only as required to complete the application process you've requested help with.",
-        },
-        {
-            question: "How do you verify your Digital Assistants?",
-            answer: "All our Digital Assistants undergo thorough background verification, including identity checks, address verification, and reference checks. They receive comprehensive training and are regularly evaluated on their performance and adherence to our privacy and security policies.",
-        },
-        {
-            question: "What happens to my documents after the service?",
-            answer: "Our Digital Assistants will only view your documents during the service session. They don't keep physical copies of your documents. Any digital copies used for application purposes are securely deleted from our systems after the service is completed.",
-        },
-        {
-            question: "Can I request data deletion?",
-            answer: "Yes, you have the right to request deletion of your personal information from our systems. You can make this request through our website or by contacting our support team. We'll process your request in accordance with applicable data protection regulations.",
-        },
+    const categories = [
+        { id: "all", label: "All Questions" },
+        { id: "general", label: "General" },
+        { id: "services", label: "Services" },
+        { id: "pricing", label: "Pricing" },
+        { id: "privacy", label: "Privacy" },
     ];
 
-    const sections = [
-        { id: "general", title: "General Questions", faqs: generalFaqs },
-        { id: "services", title: "Services", faqs: serviceFaqs },
-        { id: "pricing", title: "Pricing & Payment", faqs: pricingFaqs },
-        { id: "privacy", title: "Privacy & Security", faqs: privacyFaqs },
-    ];
+    const filteredFaqs = allFaqs.filter((faq) => {
+        const matchesSearch = faq.question.toLowerCase().includes(searchTerm.toLowerCase()) || faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = activeCategory === "all" || faq.category === activeCategory;
+        return matchesSearch && matchesCategory;
+    });
+
+    const toggleAccordion = (index: number) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col font-sans bg-slate-50">
             <Header />
             <main className="flex-grow">
-                <section className="bg-primary-50 py-16">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center">
-                            <h1 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
-                            <p className="text-lg text-gray-600 mb-6">Find answers to common questions about Cyber Bandhu services</p>
-                            <div className="flex flex-wrap justify-center gap-4">
-                                <Button asChild className="bg-secondary-500 hover:bg-secondary-600">
-                                    <a href="#general">General</a>
-                                </Button>
-                                <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50">
-                                    <a href="#services">Services</a>
-                                </Button>
-                                <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50">
-                                    <a href="#pricing">Pricing</a>
-                                </Button>
-                                <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50">
-                                    <a href="#privacy">Privacy</a>
+                {/* Hero Section with Search */}
+                <section className="relative py-20 lg:py-28 bg-slate-900 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-slate-900 to-black opacity-90"></div>
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                    <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-sm font-medium mb-6 backdrop-blur-md">
+                            <HelpCircle className="w-4 h-4 mr-2" />
+                            Help Center
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">How can we help you?</h1>
+                        <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
+                            Search for answers or browse through our most frequently asked questions below.
+                        </p>
+
+                        {/* Search Bar */}
+                        <div className="max-w-2xl mx-auto relative group">
+                            <div className="absolute inset-0 bg-indigo-500 rounded-full blur opacity-25 group-hover:opacity-40 transition-opacity duration-300"></div>
+                            <div className="relative bg-white rounded-full p-2 flex items-center shadow-2xl">
+                                <Search className="w-6 h-6 text-slate-400 ml-4" />
+                                <input
+                                    type="text"
+                                    placeholder="Search specific questions (e.g., 'refund', 'documents')..."
+                                    className="flex-1 px-4 py-3 text-lg text-slate-700 placeholder-slate-400 bg-transparent border-none focus:ring-0 focus:outline-none"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <Button className="rounded-full px-8 py-6 bg-indigo-600 hover:bg-indigo-700 text-white">
+                                    Search
                                 </Button>
                             </div>
                         </div>
                     </div>
                 </section>
-                {sections.map((section) => (
-                    <section id={section.id} key={section.id} className="py-16 border-b border-gray-100 last:border-b-0">
-                        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="max-w-3xl mx-auto">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">{section.title}</h2>
-                                <div className="space-y-6">
-                                    {section.faqs.map((faq, index) => (
-                                        <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                                            <div className="flex items-start">
-                                                <HelpCircle className="h-6 w-6 text-primary-600 mr-3 flex-shrink-0 mt-1" />
-                                                <div>
-                                                    <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                                                    <p className="text-gray-600">{faq.answer}</p>
-                                                </div>
+
+                {/* FAQ Content Section */}
+                <section className="py-16 lg:py-24 bg-slate-50 relative">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+
+                        {/* Category Tabs */}
+                        <div className="flex flex-wrap justify-center gap-3 mb-12">
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setActiveCategory(cat.id)}
+                                    className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${activeCategory === cat.id
+                                            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-105"
+                                            : "bg-white text-slate-600 hover:bg-slate-100 hover:text-indigo-600 border border-slate-200"
+                                        }`}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* FAQ Accordion */}
+                        <div className="space-y-4">
+                            {filteredFaqs.length > 0 ? (
+                                filteredFaqs.map((faq, index) => (
+                                    <div
+                                        key={index}
+                                        className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${openIndex === index
+                                                ? "border-indigo-200 shadow-xl shadow-indigo-100/50"
+                                                : "border-slate-200 shadow-sm hover:border-indigo-100"
+                                            }`}
+                                    >
+                                        <button
+                                            onClick={() => toggleAccordion(index)}
+                                            className="w-full text-left px-8 py-6 flex items-start md:items-center justify-between focus:outline-none bg-inherit"
+                                        >
+                                            <span className={`text-lg md:text-xl font-bold pr-8 transition-colors ${openIndex === index ? "text-indigo-700" : "text-slate-800"}`}>
+                                                {faq.question}
+                                            </span>
+                                            <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${openIndex === index ? "bg-indigo-100 rotate-180" : "bg-slate-100"
+                                                }`}>
+                                                <ChevronDown className={`w-5 h-5 ${openIndex === index ? "text-indigo-600" : "text-slate-500"}`} />
+                                            </span>
+                                        </button>
+                                        <div
+                                            className={`transition-all duration-300 ease-in-out ${openIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                                                }`}
+                                        >
+                                            <div className="px-8 pb-8 pt-0 text-slate-600 text-lg leading-relaxed border-t border-slate-50/50">
+                                                <div className="h-4"></div> {/* Spacer */}
+                                                {faq.answer}
                                             </div>
                                         </div>
-                                    ))}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-12">
+                                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Search className="w-8 h-8 text-slate-400" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-slate-900 mb-2">No results found</h3>
+                                    <p className="text-slate-500">Try adjusting your search terms or browse all categories.</p>
+                                    <button
+                                        onClick={() => { setSearchTerm(""); setActiveCategory("all"); }}
+                                        className="mt-4 text-indigo-600 font-medium hover:underline"
+                                    >
+                                        Clear all filters
+                                    </button>
                                 </div>
-                            </div>
+                            )}
                         </div>
-                    </section>
-                ))}
-                <section className="py-16 bg-gray-50">
+                    </div>
+                </section>
+
+                {/* Contact Support Section */}
+                <section className="py-20 bg-white border-t border-slate-100">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4"> Didn't Find Your Answer?</h2>
-                            <p className="text-gray-600 text-lg mb-8"> Contact us directly and we'll be happy to help you with any questions</p>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 flex flex-col items-center">
-                                    <MessageSquare className="h-10 w-10 text-primary-600 mb-4" />
-                                    <h3 className="text-lg font-semibold mb-2">Chat With Us</h3>
-                                    <p className="text-gray-600 text-center mb-4"> Chat with our support team through WhatsApp</p>
-                                    <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50 mt-auto">
-                                        <a href="#">Start Chat</a>
-                                    </Button>
+                        <div className="max-w-4xl mx-auto text-center mb-16">
+                            <h2 className="text-3xl font-bold text-slate-900 mb-4">Still need help?</h2>
+                            <p className="text-slate-600 text-lg">We are available 24/7 to help you with your queries.</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                            <div className="group bg-slate-50 hover:bg-indigo-50 p-8 rounded-2xl transition-colors duration-300 text-center border border-slate-100 hover:border-indigo-100">
+                                <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <MessageSquare className="w-7 h-7 text-indigo-600" />
                                 </div>
-                                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 flex flex-col items-center">
-                                    <Phone className="h-10 w-10 text-primary-600 mb-4" />
-                                    <h3 className="text-lg font-semibold mb-2">Call Us</h3>
-                                    <p className="text-gray-600 text-center mb-4"> Speak with our support team directly</p>
-                                    <p className="text-primary-600 font-semibold mb-4"> +91 9876543210</p>
-                                    <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50 mt-auto">
-                                        <a href="tel:+919876543210">Call Now</a>
-                                    </Button>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">Live Chat</h3>
+                                <p className="text-slate-500 mb-6">Chat with our AI or human support instantly.</p>
+                                <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all">Start Chat</Button>
+                            </div>
+
+                            <div className="group bg-slate-50 hover:bg-indigo-50 p-8 rounded-2xl transition-colors duration-300 text-center border border-slate-100 hover:border-indigo-100">
+                                <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <Mail className="w-7 h-7 text-indigo-600" />
                                 </div>
-                                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 flex flex-col items-center">
-                                    <Mail className="h-10 w-10 text-primary-600 mb-4" />
-                                    <h3 className="text-lg font-semibold mb-2">Email Us</h3>
-                                    <p className="text-gray-600 text-center mb-4"> Send your questions to our support email</p>
-                                    <p className="text-primary-600 font-semibold mb-4"> help@digitaldost.in</p>
-                                    <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50 mt-auto">
-                                        <a href="mailto:help@digitaldost.in">Send Email</a>
-                                    </Button>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">Email Support</h3>
+                                <p className="text-slate-500 mb-6">Send us an email and we'll reply within 24h.</p>
+                                <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all">
+                                    <a href="mailto:support@cyberbandhu.com">Send Email</a>
+                                </Button>
+                            </div>
+
+                            <div className="group bg-slate-50 hover:bg-indigo-50 p-8 rounded-2xl transition-colors duration-300 text-center border border-slate-100 hover:border-indigo-100">
+                                <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <Phone className="w-7 h-7 text-indigo-600" />
                                 </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">Phone Support</h3>
+                                <p className="text-slate-500 mb-6">Call our toll-free number for immediate help.</p>
+                                <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-all">
+                                    <a href="tel:18001234567">Call Now</a>
+                                </Button>
                             </div>
                         </div>
                     </div>
                 </section>
-                <section className="py-16 bg-primary-600">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-3xl font-bold text-white mb-4"> Ready to Get Started?</h2>
-                            <p className="text-primary-100 text-lg mb-8"> Book your first appointment with Cyber Bandhu and experience hassle-free digital assistance.</p>
-                            <Button asChild variant="secondary" size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
-                                <Link to="/contact">Book an Appointment</Link>
-                            </Button>
-                        </div>
+
+                {/* CTA Section */}
+                <section className="py-20 bg-indigo-600 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full -ml-32 -mb-32"></div>
+
+                    <div className="container relative mx-auto px-4 text-center">
+                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to experience the future of digital help?</h2>
+                        <p className="text-indigo-100 text-lg mb-8 max-w-2xl mx-auto">Join thousands of students who have simplified their digital lives with Cyber Bandhu.</p>
+                        <Button asChild size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl px-10 py-6 text-lg h-auto font-bold">
+                            <Link to="/contact">Get Started Now <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                        </Button>
                     </div>
                 </section>
             </main>

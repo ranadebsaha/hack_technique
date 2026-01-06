@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { History, MapPin, Loader2, CheckCircle } from "lucide-react";
+import { History, MapPin, Loader2, CheckCircle, Calendar, Clock, CheckCircle2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 const UserDashboard = () => {
@@ -285,22 +285,30 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold dark:text-white">User Dashboard</h1>
-          <div className="flex items-center gap-2">
+      <header className="bg-white shadow-md border-b-2 border-primary-100">
+        <div className="container mx-auto px-4 py-5 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">User Dashboard</h1>
+            <p className="text-sm text-gray-600 mt-1">Welcome, {user.name || "User"}</p>
+          </div>
+          <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => navigate("/user/history")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 border-primary-300 hover:bg-primary-50 text-primary-700"
             >
-              <History className="h-4 w-4" />
-              History
+              <History className="h-5 w-5" />
+              <span className="hidden sm:inline">History</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <Button 
+              variant="ghost" 
+              size="lg"
+              onClick={handleLogout}
+              className="hover:bg-red-50 hover:text-red-600"
+            >
               Logout
             </Button>
           </div>
@@ -308,148 +316,188 @@ const UserDashboard = () => {
       </header>
 
       {/* Main content */}
-      <main className="container mx-auto px-4 py-6 flex-grow">
+      <main className="container mx-auto px-4 py-8 flex-grow">
         {/* Stats */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-white">Total Services Requested</CardTitle>
+        <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 shadow-lg hover:shadow-xl transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-800">Total Requests</CardTitle>
+                <Calendar className="h-8 w-8 text-blue-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold dark:text-white">{serviceStats.totalRequested}</p>
+              <p className="text-4xl font-bold text-blue-700">{serviceStats.totalRequested}</p>
+              <p className="text-sm text-gray-600 mt-2">All service requests</p>
             </CardContent>
           </Card>
-          <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-white">Pending Services</CardTitle>
+          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200 shadow-lg hover:shadow-xl transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-800">Pending</CardTitle>
+                <Clock className="h-8 w-8 text-yellow-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold dark:text-white">{serviceStats.pending}</p>
+              <p className="text-4xl font-bold text-yellow-700">{serviceStats.pending}</p>
+              <p className="text-sm text-gray-600 mt-2">Awaiting completion</p>
             </CardContent>
           </Card>
-          <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-white">Completed Services</CardTitle>
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 shadow-lg hover:shadow-xl transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-800">Completed</CardTitle>
+                <CheckCircle2 className="h-8 w-8 text-green-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold dark:text-white">{serviceStats.completed}</p>
+              <p className="text-4xl font-bold text-green-700">{serviceStats.completed}</p>
+              <p className="text-sm text-gray-600 mt-2">Finished services</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Request Service Form */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
-          <CardHeader>
-            <CardTitle className="dark:text-white">Request a Service</CardTitle>
+        <Card className="bg-white border-2 border-gray-200 shadow-xl">
+          <CardHeader className="bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-t-lg">
+            <CardTitle className="text-2xl font-bold">Request a Service</CardTitle>
+            <p className="text-primary-100 mt-1">Fill in the details below to request assistance</p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={submitServiceRequest} className="space-y-4">
+          <CardContent className="p-6">
+            <form onSubmit={submitServiceRequest} className="space-y-6">
               <div>
-                <label className="block mb-1">Service Name *</label>
+                <label className="block mb-2 text-base font-semibold text-gray-700">Service Name *</label>
                 <Input
                   name="service_name"
                   value={serviceForm.service_name}
                   onChange={handleServiceChange}
                   required
-                  placeholder="Enter service name"
+                  placeholder="e.g., College Admission Form, Scholarship Application"
+                  className="h-12 text-base border-2 focus:border-primary-500"
                 />
               </div>
 
               <div>
-                <label className="block mb-1">Service Description *</label>
+                <label className="block mb-2 text-base font-semibold text-gray-700">Service Description *</label>
                 <Textarea
                   name="service_des"
                   value={serviceForm.service_des}
                   onChange={handleServiceChange}
                   required
-                  placeholder="Describe the service you need"
+                  placeholder="Describe the service you need in detail..."
+                  className="min-h-24 text-base border-2 focus:border-primary-500"
                 />
               </div>
 
-              <div>
-                <label className="block mb-1">Date *</label>
-                <Input
-                  name="date"
-                  value={serviceForm.date}
-                  onChange={handleServiceChange}
-                  required
-                  type="date"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-2 text-base font-semibold text-gray-700">Date *</label>
+                  <Input
+                    name="date"
+                    value={serviceForm.date}
+                    onChange={handleServiceChange}
+                    required
+                    type="date"
+                    className="h-12 text-base border-2 focus:border-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-base font-semibold text-gray-700">Time *</label>
+                  <Input
+                    name="time"
+                    value={serviceForm.time}
+                    onChange={handleServiceChange}
+                    required
+                    type="time"
+                    className="h-12 text-base border-2 focus:border-primary-500"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block mb-1 dark:text-white">Time *</label>
-                <Input
-                  name="time"
-                  value={serviceForm.time}
-                  onChange={handleServiceChange}
-                  required
-                  type="time"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="dark:text-white">Location * (Required to match nearby experts)</Label>
-                <div className="flex gap-2">
+              <div className="space-y-3 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                <Label className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-primary-600" />
+                  Location * (Required)
+                </Label>
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     type="button"
                     onClick={handleFetchLocation}
                     disabled={isFetchingLocation}
                     variant="outline"
-                    className="flex items-center gap-2"
+                    className="flex items-center justify-center gap-2 h-12 text-base font-semibold border-2 border-primary-500 text-primary-700 hover:bg-primary-50"
                   >
                     {isFetchingLocation ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Fetching...
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Fetching Location...
                       </>
                     ) : (
                       <>
-                        <MapPin className="h-4 w-4" />
-                        Fetch Location
+                        <MapPin className="h-5 w-5" />
+                        Fetch My Location
                       </>
                     )}
                   </Button>
                   {serviceForm.location && (
-                    <div className="flex-1 px-3 py-2 border rounded-md bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm flex items-center">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Location captured
+                    <div className="flex-1 px-4 py-3 border-2 border-green-300 rounded-lg bg-green-50 text-green-800 flex items-center justify-center gap-2">
+                      <CheckCircle className="h-5 w-5" />
+                      <span className="font-semibold">Location Captured</span>
                     </div>
                   )}
                 </div>
                 {locationStatus && (
-                  <p className={`text-xs ${serviceForm.location ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}>
+                  <p className={`text-sm font-medium ${serviceForm.location ? "text-green-700" : "text-orange-600"}`}>
                     {locationStatus}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Click "Fetch Location" to allow the browser to access your location. This is required so we can match you with nearby experts.
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Click "Fetch My Location" to allow your browser to access your location. This helps us match you with nearby experts who can assist you.
                 </p>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start space-x-3 p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
                 <input
                   type="checkbox"
                   id="female_preference"
                   name="female_preference"
                   checked={serviceForm.female_preference}
                   onChange={handleCheckboxChange}
-                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  className="w-5 h-5 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
                 />
-                <Label htmlFor="female_preference" className="text-sm font-medium cursor-pointer dark:text-white">
+                <Label htmlFor="female_preference" className="text-base font-semibold text-gray-800 cursor-pointer leading-relaxed">
                   I prefer a female expert/assistant
                 </Label>
               </div>
 
-              <Button type="submit">Submit Request</Button>
+              <Button 
+                type="submit" 
+                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl transition-all"
+              >
+                Submit Service Request
+              </Button>
             </form>
           </CardContent>
         </Card>
 
         {/* Buttons for profile modals */}
-        <div className="mt-6 flex gap-4">
-          <Button onClick={openProfileModal}>View Profile</Button>
-          <Button onClick={openUpdateModal} variant="outline">Update Profile</Button>
+        <div className="mt-8 flex flex-wrap gap-4 justify-center">
+          <Button 
+            onClick={openProfileModal}
+            size="lg"
+            className="h-12 px-6 text-base font-semibold bg-gray-700 hover:bg-gray-800 text-white"
+          >
+            View Profile
+          </Button>
+          <Button 
+            onClick={openUpdateModal} 
+            variant="outline"
+            size="lg"
+            className="h-12 px-6 text-base font-semibold border-2 border-primary-500 text-primary-700 hover:bg-primary-50"
+          >
+            Update Profile
+          </Button>
         </div>
       </main>
 
@@ -457,26 +505,54 @@ const UserDashboard = () => {
 
       {/* Profile Modal */}
       {profileModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded p-6 max-w-lg w-full relative">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto border-2 border-gray-200">
             <button
-              className="absolute top-2 right-3 text-gray-700 hover:text-gray-900"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
               onClick={closeProfileModal}
               aria-label="Close profile modal"
             >
-              ✕
+              ×
             </button>
-            <h2 className="text-xl font-bold mb-4 dark:text-white">Profile Details</h2>
-            <div className="dark:text-gray-300">
-              <p><strong>Name:</strong> {user.name}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Phone:</strong> {user.mobile_no}</p>
-              <p><strong>Address:</strong> {user.address}, {user.landmark}, {user.city}, {user.district}, {user.state}, {user.pincode}</p>
-              <p><strong>Date of Birth:</strong> {user.dob}</p>
-              <p><strong>Gender:</strong> {user.gender}</p>
+            <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b-2 border-primary-200 pb-3">Profile Details</h2>
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Name</p>
+                <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Email</p>
+                <p className="text-lg font-semibold text-gray-900">{user.email}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Phone</p>
+                <p className="text-lg font-semibold text-gray-900">{user.mobile_no}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Address</p>
+                <p className="text-base font-semibold text-gray-900">{user.address}, {user.landmark}, {user.city}, {user.district}, {user.state} {user.pincode && `- ${user.pincode}`}</p>
+              </div>
+              {user.dob && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Date of Birth</p>
+                  <p className="text-base font-semibold text-gray-900">{user.dob}</p>
+                </div>
+              )}
+              {user.gender && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Gender</p>
+                  <p className="text-base font-semibold text-gray-900">{user.gender}</p>
+                </div>
+              )}
             </div>
-            <div className="mt-4 flex justify-end">
-              <Button onClick={closeProfileModal}>Close</Button>
+            <div className="mt-6 flex justify-end">
+              <Button 
+                onClick={closeProfileModal}
+                size="lg"
+                className="h-12 px-8 text-base font-semibold bg-primary-600 hover:bg-primary-700"
+              >
+                Close
+              </Button>
             </div>
           </div>
         </div>
@@ -484,96 +560,157 @@ const UserDashboard = () => {
 
       {/* Update Profile Modal */}
       {updateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded p-6 max-w-lg w-full relative">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto border-2 border-gray-200">
             <button
-              className="absolute top-2 right-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
               onClick={closeUpdateModal}
               aria-label="Close update modal"
             >
-              ✕
+              ×
             </button>
-            <h2 className="text-xl font-bold mb-4 dark:text-white">Update Profile</h2>
-            <form onSubmit={submitProfileUpdate} className="space-y-4">
-              <Input
-                name="name"
-                value={updateForm.name}
-                onChange={handleUpdateChange}
-                placeholder="Name"
-                required
-              />
-              <Input
-                name="email"
-                value={updateForm.email}
-                onChange={handleUpdateChange}
-                placeholder="Email"
-                type="email"
-                required
-              />
-              <Input
-                name="mobile_no"
-                value={updateForm.mobile_no}
-                onChange={handleUpdateChange}
-                placeholder="Phone"
-                required
-              />
-              <Input
-                name="dob"
-                value={updateForm.dob}
-                onChange={handleUpdateChange}
-                placeholder="Date of Birth"
-                type="date"
-              />
-              <Input
-                name="gender"
-                value={updateForm.gender}
-                onChange={handleUpdateChange}
-                placeholder="Gender"
-              />
-              <Input
-                name="address"
-                value={updateForm.address}
-                onChange={handleUpdateChange}
-                placeholder="Address"
-                required
-              />
-              <Input
-                name="landmark"
-                value={updateForm.landmark}
-                onChange={handleUpdateChange}
-                placeholder="Landmark"
-              />
-              <Input
-                name="city"
-                value={updateForm.city}
-                onChange={handleUpdateChange}
-                placeholder="City"
-                required
-              />
-              <Input
-                name="district"
-                value={updateForm.district}
-                onChange={handleUpdateChange}
-                placeholder="District"
-                required
-              />
-              <Input
-                name="state"
-                value={updateForm.state}
-                onChange={handleUpdateChange}
-                placeholder="State"
-                required
-              />
-              <Input
-                name="pincode"
-                value={updateForm.pincode}
-                onChange={handleUpdateChange}
-                placeholder="Pincode"
-              />
+            <h2 className="text-2xl font-bold mb-6 text-gray-900 border-b-2 border-primary-200 pb-3">Update Profile</h2>
+            <form onSubmit={submitProfileUpdate} className="space-y-5">
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Name *</label>
+                <Input
+                  name="name"
+                  value={updateForm.name}
+                  onChange={handleUpdateChange}
+                  placeholder="Enter your full name"
+                  required
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Email *</label>
+                <Input
+                  name="email"
+                  value={updateForm.email}
+                  onChange={handleUpdateChange}
+                  placeholder="Enter your email"
+                  type="email"
+                  required
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Phone *</label>
+                <Input
+                  name="mobile_no"
+                  value={updateForm.mobile_no}
+                  onChange={handleUpdateChange}
+                  placeholder="Enter your phone number"
+                  required
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Date of Birth</label>
+                <Input
+                  name="dob"
+                  value={updateForm.dob}
+                  onChange={handleUpdateChange}
+                  placeholder="Date of Birth"
+                  type="date"
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Gender</label>
+                <Input
+                  name="gender"
+                  value={updateForm.gender}
+                  onChange={handleUpdateChange}
+                  placeholder="Enter your gender"
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Address *</label>
+                <Input
+                  name="address"
+                  value={updateForm.address}
+                  onChange={handleUpdateChange}
+                  placeholder="Enter your address"
+                  required
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">Landmark</label>
+                <Input
+                  name="landmark"
+                  value={updateForm.landmark}
+                  onChange={handleUpdateChange}
+                  placeholder="Enter landmark"
+                  className="h-12 text-base border-2"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-700">City *</label>
+                  <Input
+                    name="city"
+                    value={updateForm.city}
+                    onChange={handleUpdateChange}
+                    placeholder="Enter city"
+                    required
+                    className="h-12 text-base border-2"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-700">District *</label>
+                  <Input
+                    name="district"
+                    value={updateForm.district}
+                    onChange={handleUpdateChange}
+                    placeholder="Enter district"
+                    required
+                    className="h-12 text-base border-2"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-700">State *</label>
+                  <Input
+                    name="state"
+                    value={updateForm.state}
+                    onChange={handleUpdateChange}
+                    placeholder="Enter state"
+                    required
+                    className="h-12 text-base border-2"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-700">Pincode</label>
+                  <Input
+                    name="pincode"
+                    value={updateForm.pincode}
+                    onChange={handleUpdateChange}
+                    placeholder="Enter pincode"
+                    className="h-12 text-base border-2"
+                  />
+                </div>
+              </div>
 
-              <div className="flex justify-end gap-4 mt-4">
-                <Button type="submit">Save</Button>
-                <Button variant="outline" onClick={closeUpdateModal}>Cancel</Button>
+              <div className="flex justify-end gap-4 mt-6 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={closeUpdateModal}
+                  size="lg"
+                  className="h-12 px-8 text-base font-semibold"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit"
+                  size="lg"
+                  className="h-12 px-8 text-base font-semibold bg-primary-600 hover:bg-primary-700"
+                >
+                  Save Changes
+                </Button>
               </div>
             </form>
           </div>

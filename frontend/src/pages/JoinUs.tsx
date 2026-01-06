@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Link, useLocation } from "react-router-dom";
@@ -27,7 +20,11 @@ import {
     CheckCircle,
     FileText,
     MapPin,
-    Loader2
+    Loader2,
+    Briefcase,
+    Lock,
+    User,
+    Home
 } from "lucide-react";
 
 const JoinUs = () => {
@@ -194,7 +191,7 @@ const JoinUs = () => {
             "state",
             "education",
             "whyJoin",
-            "password",  
+            "password",
         ];
 
         const missingField = mandatoryFields.find((field) => !formData[field as keyof typeof formData]);
@@ -260,467 +257,248 @@ const JoinUs = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col font-sans bg-gray-50">
             <Header />
             <main className="flex-grow">
-                <section className="py-16 md:py-24 bg-gradient-to-b from-primary-50 to-white">
-                    <div className="container mx-auto px-4">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                                Become a Cyber Bandhu Assistant
-                            </h1>
-                            <p className="text-xl text-gray-600 mb-8">
-                                Join your peers and help students across India navigate digital world while earning.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Button asChild size="lg" className="bg-secondary-500 hover:bg-secondary-600">
-                                    <a href="#apply">
-                                        <UserPlus className="mr-2" />
-                                        Register as Assistant
-                                    </a>
-                                </Button>
-                                <Button asChild size="lg" variant="outline">
-                                    <Link to="/assistant/login">
-                                        <LogIn className="mr-2" />
-                                        Assistant Login
-                                    </Link>
-                                </Button>
-                            </div>
+                {/* Hero Section */}
+                <section className="relative py-20 lg:py-28 overflow-hidden bg-indigo-900">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 to-purple-900 opacity-90"></div>
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                    <div className="container relative mx-auto px-4 text-center text-white">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 text-indigo-100 text-sm font-medium mb-6 backdrop-blur-sm border border-white/10">
+                            <UserPlus className="w-4 h-4 mr-2" /> Join Our Network
+                        </div>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                            Become a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">Cyber Bandhu</span>
+                        </h1>
+                        <p className="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto">
+                            Join your peers and help students across India navigate the digital world while earning a steady income.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Button asChild size="lg" className="bg-white text-indigo-900 hover:bg-gray-100 shadow-xl shadow-indigo-900/20 text-lg px-8">
+                                <a href="#apply">Apply Now</a>
+                            </Button>
+                            <Button asChild size="lg" variant="outline" className="border-indigo-300 text-indigo-500 hover:bg-white hover:!text-indigo-600 hover:border-white text-lg px-8 transition-colors duration-300">
+                                <Link to="/assistant/login">
+                                    <LogIn className="mr-2 w-5 h-5" />
+                                    Assistant Login
+                                </Link>
+                            </Button>
                         </div>
                     </div>
                 </section>
 
-                <section className="py-16">
+                {/* Benefits Section */}
+                <section className="py-20 bg-white">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4">What Digital Assistants Do</h2>
-                            <p className="text-gray-600 text-lg">As a Digital Dost assistant, you'll help students in your community access digital opportunities</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <FileText className="h-8 w-8 text-primary-600" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Form Assistance</h3>
-                                <p className="text-gray-600">Help students complete online forms for college admissions, scholarships, and government schemes.</p>
-                            </div>
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <GraduationCap className="h-8 w-8 text-primary-600" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Education Guidance</h3>
-                                <p className="text-gray-600">Provide information about colleges, courses, and career opportunities to help make informed decisions.</p>
-                            </div>
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <ShieldCheck className="h-8 w-8 text-primary-600" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Digital Safety</h3>
-                                <p className="text-gray-600">Teach basic online safety practices and help students protect their digital information.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section className="py-16 bg-gray-50">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4">Benefits of Becoming a Digital Dost</h2>
-                            <p className="text-gray-600 text-lg">Why students across India are joining our network of digital assistants</p>
+                        <div className="max-w-3xl mx-auto text-center mb-16">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Join as a Digital Dost?</h2>
+                            <p className="text-gray-600 text-lg">More than just a job - it's an opportunity to grow and serve.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {benefits.map((benefit, index) => (
-                                <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                                    <div className="flex items-start">
-                                        <div className="mr-4">
-                                            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                                                <benefit.icon className="h-6 w-6 text-primary-600" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                                            <p className="text-gray-600">{benefit.description}</p>
-                                        </div>
+                                <div key={index} className="group bg-gray-50 rounded-2xl p-8 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100">
+                                    <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                        <benefit.icon className="h-7 w-7 text-indigo-600" />
                                     </div>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
+                                    <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
-                <section className="py-16">
+
+                {/* Requirements & Form Section */}
+                <section id="apply" className="py-20 bg-gray-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4">Who Can Join</h2>
-                            <p className="text-gray-600 text-lg">We're looking for responsible students who want to make a difference</p>
-                        </div>
-                        <div className="max-w-3xl mx-auto">
-                            <div className="bg-white rounded-lg shadow-md p-8 border border-gray-100">
-                                <h3 className="text-xl font-semibold mb-6 text-center">Basic Requirements</h3>
-                                <ul className="space-y-4">
-                                    {requirements.map((requirement, index) => (
-                                        <li key={index} className="flex items-start">
-                                            <CheckCircle className="h-6 w-6 text-primary-600 mr-3 flex-shrink-0 mt-0.5" />
-                                            <span className="text-gray-700">{requirement}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section className="py-16 bg-primary-600 text-white">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-4xl mx-auto">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                                <div>
-                                    <h2 className="text-3xl font-bold mb-4">We Provide Complete Training</h2>
-                                    <p className="text-primary-100 mb-6">Don't worry if you don't have all the skills yet. We provide comprehensive training to all new digital assistants.</p>
-                                    <ul className="space-y-3">
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                                                <CheckCircle className="h-4 w-4 text-primary-600" />
-                                            </div>
-                                            <span>Digital skills training</span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                                                <CheckCircle className="h-4 w-4 text-primary-600" />
-                                            </div>
-                                            <span>Form filling procedures</span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                                                <CheckCircle className="h-4 w-4 text-primary-600" />
-                                            </div>
-                                            <span>Communication skills</span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                                                <CheckCircle className="h-4 w-4 text-primary-600" />
-                                            </div>
-                                            <span>Educational counseling basics</span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                                                <CheckCircle className="h-4 w-4 text-primary-600" />
-                                            </div>
-                                            <span>Customer service excellence</span>
-                                        </li>
+                        <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto">
+
+                            {/* Left Side: Requirements & Training */}
+                            <div className="lg:w-4/12 space-y-8">
+                                <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
+                                    <h3 className="text-xl font-bold mb-6 flex items-center">
+                                        <CheckCircle className="w-6 h-6 text-green-500 mr-2" /> Requirements
+                                    </h3>
+                                    <ul className="space-y-4">
+                                        {requirements.map((req, idx) => (
+                                            <li key={idx} className="flex items-start text-gray-700">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 mr-3 flex-shrink-0"></div>
+                                                {req}
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
-                                <div className="bg-white rounded-lg p-8 text-gray-900">
-                                    <h3 className="text-xl font-semibold mb-4">Training Process</h3>
-                                    <ol className="space-y-4">
-                                        <li className="flex">
-                                            <span className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mr-3 flex-shrink-0">
-                                                <span className="font-semibold text-primary-600">1</span>
-                                            </span>
-                                            <div>
-                                                <h4 className="font-semibold">Initial Online Training</h4>
-                                                <p className="text-gray-600 text-sm">Complete our basic digital skills course online</p>
+
+                                <div className="bg-indigo-900 rounded-3xl p-8 shadow-lg text-white">
+                                    <h3 className="text-xl font-bold mb-4">Training Included</h3>
+                                    <p className="text-indigo-200 mb-6 text-sm">We provide comprehensive training to ensure you succeed.</p>
+                                    <div className="space-y-4">
+                                        {[
+                                            "Online Digital Skills Course",
+                                            "One-Day In-Person Workshop",
+                                            "Field Shadowing",
+                                            "Official Certification"
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex items-center space-x-3 bg-white/10 p-3 rounded-lg backdrop-blur-sm">
+                                                <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold">
+                                                    {i + 1}
+                                                </div>
+                                                <span className="text-sm font-medium">{item}</span>
                                             </div>
-                                        </li>
-                                        <li className="flex">
-                                            <span className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mr-3 flex-shrink-0">
-                                                <span className="font-semibold text-primary-600">2</span>
-                                            </span>
-                                            <div>
-                                                <h4 className="font-semibold">In-Person Workshop</h4>
-                                                <p className="text-gray-600 text-sm">Attend a one-day workshop in your area</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex">
-                                            <span className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mr-3 flex-shrink-0">
-                                                <span className="font-semibold text-primary-600">3</span>
-                                            </span>
-                                            <div>
-                                                <h4 className="font-semibold">Shadowing Experience</h4>
-                                                <p className="text-gray-600 text-sm">Accompany an experienced assistant</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex">
-                                            <span className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mr-3 flex-shrink-0">
-                                                <span className="font-semibold text-primary-600">4</span>
-                                            </span>
-                                            <div>
-                                                <h4 className="font-semibold">Final Certification</h4>
-                                                <p className="text-gray-600 text-sm">Complete assessment and get certified</p>
-                                            </div>
-                                        </li>
-                                    </ol>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
-                <section className="py-16">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4">Stories from Our Digital Assistants</h2>
-                            <p className="text-gray-600 text-lg">Hear from students who've joined our mission to bridge the digital divide</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-                                <div className="flex items-center mb-4">
-                                    <div className="h-12 w-12 rounded-full bg-primary-100 overflow-hidden flex-shrink-0">
-                                        <div className="h-full w-full flex items-center justify-center text-primary-600 font-semibold text-lg">A</div>
-                                    </div>
-                                    <div className="ml-4">
-                                        <h4 className="font-semibold text-gray-900">Aman Verma</h4>
-                                        <p className="text-sm text-gray-500">Digital Assistant - Madhya Pradesh</p>
-                                    </div>
-                                </div>
-                                <p className="text-gray-600 italic">"Working as a Digital Dost has not only helped me financially during my college years, but also gave me confidence and communication skills that I now use in my professional career. It's incredibly rewarding to help students from my own village access opportunities they didn't know existed."</p>
-                            </div>
-                            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-                                <div className="flex items-center mb-4">
-                                    <div className="h-12 w-12 rounded-full bg-primary-100 overflow-hidden flex-shrink-0">
-                                        <div className="h-full w-full flex items-center justify-center text-primary-600 font-semibold text-lg">S</div>
-                                    </div>
-                                    <div className="ml-4">
-                                        <h4 className="font-semibold text-gray-900">Sunita Patel</h4>
-                                        <p className="text-sm text-gray-500">Digital Assistant - Maharashtra</p>
-                                    </div>
-                                </div>
-                                <p className="text-gray-600 italic">"Being a girl from a small town, I faced digital barriers myself. Now I help other girls overcome these same challenges. The flexible hours allow me to continue my studies while earning enough to cover my expenses. The impact I'm making in my community is priceless."</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
-                <section id="apply" className="py-16">
-                    <div className="container mx-auto px-4 max-w-3xl">
-                        <h2 className="text-3xl font-bold text-center mb-6">
-                            Apply to Become a Digital Assistant
-                        </h2>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <Input
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                placeholder="Full Name *"
-                                required
-                            />
-                            <Input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                placeholder="Email *"
-                                required
-                            />
-                            <Input
-                                name="mobile_no"
-                                value={formData.mobile_no}
-                                onChange={handleInputChange}
-                                placeholder="Mobile Number *"
-                                required
-                            />
-                            <Input
-                                type="date"
-                                name="dob"
-                                value={formData.dob}
-                                onChange={handleInputChange}
-                                placeholder="Date of Birth *"
-                                required
-                            />
-                            <Label>Gender *</Label>
-                            <RadioGroup
-                                value={formData.gender}
-                                onValueChange={(val) => setFormData((prev) => ({ ...prev, gender: val }))}
-                                className="flex space-x-4"
-                            >
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem id="male" value="male" />
-                                    <Label htmlFor="male">Male</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem id="female" value="female" />
-                                    <Label htmlFor="female">Female</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem id="other" value="other" />
-                                    <Label htmlFor="other">Other</Label>
-                                </div>
-                            </RadioGroup>
+                            {/* Right Side: Registration Form */}
+                            <div className="lg:w-8/12">
+                                <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
+                                    <div className="mb-10">
+                                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Application Form</h2>
+                                        <p className="text-gray-600">Fill in your details to start your journey.</p>
+                                    </div>
 
-                            <Input
-                                name="govt_id"
-                                value={formData.govt_id}
-                                onChange={handleInputChange}
-                                placeholder="Government ID Number *"
-                                required
-                            />
+                                    <form onSubmit={handleSubmit} className="space-y-10">
 
-                            <Input
-                                name="address"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                                placeholder="Address *"
-                                required
-                            />
-                            <Input
-                                name="landmark"
-                                value={formData.landmark}
-                                onChange={handleInputChange}
-                                placeholder="Landmark"
-                            />
-                            <Input
-                                name="city"
-                                value={formData.city}
-                                onChange={handleInputChange}
-                                placeholder="City *"
-                                required
-                            />
-                            <Input
-                                name="district"
-                                value={formData.district}
-                                onChange={handleInputChange}
-                                placeholder="District *"
-                                required
-                            />
-                            <Input
-                                name="state"
-                                value={formData.state}
-                                onChange={handleInputChange}
-                                placeholder="State *"
-                                required
-                            />
-                            <Input
-                                name="pincode"
-                                value={formData.pincode}
-                                onChange={handleInputChange}
-                                placeholder="Pincode"
-                            />
-
-                            <div className="space-y-2">
-                                <Label>Location (Optional - Helps with service matching)</Label>
-                                <div className="flex gap-2">
-                                    <Button
-                                        type="button"
-                                        onClick={handleFetchLocation}
-                                        disabled={isFetchingLocation}
-                                        variant="outline"
-                                        className="flex items-center gap-2"
-                                    >
-                                        {isFetchingLocation ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                Fetching...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <MapPin className="h-4 w-4" />
-                                                Fetch Location
-                                            </>
-                                        )}
-                                    </Button>
-                                    {formData.location && (
-                                        <div className="flex-1 px-3 py-2 border rounded-md bg-green-50 text-green-700 text-sm flex items-center">
-                                            <CheckCircle className="h-4 w-4 mr-2" />
-                                            Location captured
+                                        {/* Personal Details */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-indigo-900 mb-6 flex items-center border-b pb-2">
+                                                <User className="w-5 h-5 mr-2" /> Personal Details
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <Label>Full Name <span className="text-red-500">*</span></Label>
+                                                    <Input name="name" value={formData.name} onChange={handleInputChange} placeholder="Enter your full name" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Date of Birth <span className="text-red-500">*</span></Label>
+                                                    <Input type="date" name="dob" value={formData.dob} onChange={handleInputChange} required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Email <span className="text-red-500">*</span></Label>
+                                                    <Input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="your@email.com" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Mobile Number <span className="text-red-500">*</span></Label>
+                                                    <Input name="mobile_no" value={formData.mobile_no} onChange={handleInputChange} placeholder="10-digit number" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2 md:col-span-2">
+                                                    <Label>Government ID Number (Aadhaar/PAN) <span className="text-red-500">*</span></Label>
+                                                    <Input name="govt_id" value={formData.govt_id} onChange={handleInputChange} placeholder="Enter ID number" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2 md:col-span-2">
+                                                    <Label>Gender <span className="text-red-500">*</span></Label>
+                                                    <RadioGroup value={formData.gender} onValueChange={(val) => setFormData((prev) => ({ ...prev, gender: val }))} className="flex space-x-6 pt-1">
+                                                        <div className="flex items-center space-x-2"><RadioGroupItem id="male" value="male" /><Label htmlFor="male" className="font-normal cursor-pointer">Male</Label></div>
+                                                        <div className="flex items-center space-x-2"><RadioGroupItem id="female" value="female" /><Label htmlFor="female" className="font-normal cursor-pointer">Female</Label></div>
+                                                        <div className="flex items-center space-x-2"><RadioGroupItem id="other" value="other" /><Label htmlFor="other" className="font-normal cursor-pointer">Other</Label></div>
+                                                    </RadioGroup>
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
+
+                                        {/* Address & Location */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-indigo-900 mb-6 flex items-center border-b pb-2">
+                                                <Home className="w-5 h-5 mr-2" /> Address & Location
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2 md:col-span-2">
+                                                    <Label>Address <span className="text-red-500">*</span></Label>
+                                                    <Input name="address" value={formData.address} onChange={handleInputChange} placeholder="Full street address" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>City <span className="text-red-500">*</span></Label>
+                                                    <Input name="city" value={formData.city} onChange={handleInputChange} placeholder="City name" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>District <span className="text-red-500">*</span></Label>
+                                                    <Input name="district" value={formData.district} onChange={handleInputChange} placeholder="District name" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>State <span className="text-red-500">*</span></Label>
+                                                    <Input name="state" value={formData.state} onChange={handleInputChange} placeholder="State name" required className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Pincode</Label>
+                                                    <Input name="pincode" value={formData.pincode} onChange={handleInputChange} placeholder="6-digit pincode" className="h-11" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Landmark</Label>
+                                                    <Input name="landmark" value={formData.landmark} onChange={handleInputChange} placeholder="Nearby landmark" className="h-11" />
+                                                </div>
+                                                <div className="space-y-2 md:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                                    <Label className="text-blue-900 font-semibold mb-2 block">Service Location</Label>
+                                                    <p className="text-xs text-blue-700 mb-3">Please provide your current location to help us match you with nearby students.</p>
+                                                    <div className="flex gap-3">
+                                                        <Button type="button" onClick={handleFetchLocation} disabled={isFetchingLocation} variant="outline" className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50">
+                                                            {isFetchingLocation ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Fetching...</> : <><MapPin className="h-4 w-4 mr-2" /> Fetch Current Location</>}
+                                                        </Button>
+                                                        {formData.location && <div className="flex-1 px-3 py-2 border border-green-200 rounded-md bg-green-50 text-green-700 text-sm flex items-center"><CheckCircle className="h-4 w-4 mr-2" /> Location captured</div>}
+                                                    </div>
+                                                    {locationStatus && <p className={`text-xs mt-2 ${formData.location ? "text-green-600" : "text-gray-500"}`}>{locationStatus}</p>}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Professional Info */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-indigo-900 mb-6 flex items-center border-b pb-2">
+                                                <Briefcase className="w-5 h-5 mr-2" /> Education & Experience
+                                            </h3>
+                                            <div className="space-y-6">
+                                                <div className="space-y-2">
+                                                    <Label>Education Level <span className="text-red-500">*</span></Label>
+                                                    <select name="education" value={formData.education} onChange={handleInputChange} required className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                                        <option value="" disabled>Select highest qualification</option>
+                                                        <option value="12th">12th Pass</option>
+                                                        <option value="diploma">Diploma</option>
+                                                        <option value="undergraduate">Undergraduate</option>
+                                                        <option value="graduate">Graduate</option>
+                                                        <option value="postgraduate">Postgraduate</option>
+                                                    </select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Relevant Experience</Label>
+                                                    <Textarea name="experience" value={formData.experience} onChange={handleInputChange} placeholder="Describe any relevant work or volunteer experience (optional)" className="min-h-[100px]" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Why do you want to join? <span className="text-red-500">*</span></Label>
+                                                    <Textarea name="whyJoin" value={formData.whyJoin} onChange={handleInputChange} placeholder="Tell us about your motivation..." className="min-h-[120px]" required />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Account Security */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-indigo-900 mb-6 flex items-center border-b pb-2">
+                                                <Lock className="w-5 h-5 mr-2" /> Account Security
+                                            </h3>
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label>Create Password <span className="text-red-500">*</span></Label>
+                                                    <Input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Choose a strong password" required className="h-11" />
+                                                </div>
+                                                <div className="flex items-start bg-gray-50 p-4 rounded-lg">
+                                                    <input id="terms" type="checkbox" required className="mt-1 mr-3 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                                                    <label htmlFor="terms" className="text-gray-600 text-sm">
+                                                        I confirm that all provided information is accurate. I agree to the <Link to="#" className="text-indigo-600 underline">Terms of Service</Link> and <Link to="#" className="text-indigo-600 underline">Privacy Policy</Link>.
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4">
+                                            <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-14 text-lg shadow-lg shadow-indigo-200 rounded-xl">
+                                                {isSubmitting ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Submitting Application...</> : "Submit Application"}
+                                            </Button>
+                                            <p className="text-center text-gray-400 text-sm mt-4">
+                                                Approved applicants will receive an email within 48 hours.
+                                            </p>
+                                        </div>
+                                    </form>
                                 </div>
-                                {locationStatus && (
-                                    <p className={`text-xs ${formData.location ? "text-green-600" : "text-gray-500"}`}>
-                                        {locationStatus}
-                                    </p>
-                                )}
-                                <p className="text-xs text-gray-500">
-                                    Click "Fetch Location" to allow the browser to access your location. This helps us match you with nearby students. (Optional)
-                                </p>
-                            </div>
-
-                            <select
-                                name="education"
-                                value={formData.education}
-                                onChange={handleInputChange}
-                                required
-                                className="w-full border rounded p-2"
-                            >
-                                <option value="" disabled>
-                                    Select Education *
-                                </option>
-                                <option value="12th">12th Pass</option>
-                                <option value="diploma">Diploma</option>
-                                <option value="undergraduate">Undergraduate</option>
-                                <option value="graduate">Graduate</option>
-                                <option value="postgraduate">Postgraduate</option>
-                            </select>
-
-                            <Textarea
-                                name="experience"
-                                value={formData.experience}
-                                onChange={handleInputChange}
-                                placeholder="Experience"
-                                className="h-20"
-                            />
-
-                            <Textarea
-                                name="whyJoin"
-                                value={formData.whyJoin}
-                                onChange={handleInputChange}
-                                placeholder="Why Join *"
-                                className="h-32"
-                                required
-                            />
-
-                            <Input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                placeholder="Password *"
-                                required
-                            />
-
-                            <div className="flex items-center">
-                                <input id="terms" type="checkbox" required className="mr-2" />
-                                <label htmlFor="terms" className="text-gray-700 text-sm">
-                                    I agree to the <Link to="#" className="underline">Terms</Link> and <Link to="#" className="underline">Privacy Policy</Link>.
-                                </label>
-                            </div>
-
-                            <Button type="submit" disabled={isSubmitting} className="w-full">
-                                {isSubmitting ? "Submitting..." : "Submit"}
-                            </Button>
-
-                            <p className="text-center text-gray-500 mt-4">
-                                After review, approved applicants will receive an email with further instructions.
-                            </p>
-                        </form>
-                        </div>
-                </section>
-                <section className="py-16">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl mx-auto text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-                            <p className="text-gray-600 text-lg">Common questions about becoming a Digital Dost assistant</p>
-                        </div>
-                        <div className="max-w-3xl mx-auto">
-                            <div className="space-y-6">
-                                <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                                    <h3 className="text-lg font-semibold mb-2">How much can I earn as a Digital Assistant?</h3>
-                                    <p className="text-gray-600">Earnings depend on the number of sessions you conduct and services you provide. Digital Assistants typically earn between ₹5,000 to ₹15,000 per month working part-time, depending on their location and commitment.</p>
-                                </div>
-                                <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                                    <h3 className="text-lg font-semibold mb-2">Do I need to have my own computer?</h3>
-                                    <p className="text-gray-600">Yes, you should have access to a laptop or tablet to provide services. However, in some locations, we can provide assistance in obtaining the necessary equipment for highly qualified candidates.</p>
-                                </div>
-                                <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                                    <h3 className="text-lg font-semibold mb-2">How much time do I need to commit?</h3>
-                                    <p className="text-gray-600">We require a minimum commitment of 10 hours per week, but the schedule is flexible. You can choose when you're available to provide services, making it ideal for students.</p>
-                                </div>
-                                <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                                    <h3 className="text-lg font-semibold mb-2">How long is the training period?</h3>
-                                    <p className="text-gray-600">The initial training takes approximately 2 weeks, including online modules and in-person sessions. After that, there will be occasional refresher training as needed.</p>
-                                </div>
-                            </div>
-                            <div className="text-center mt-10">
-                                <p className="text-gray-600 mb-4">Have more questions about joining our team?</p>
-                                <Button asChild variant="outline" className="border-primary-500 text-primary-600 hover:bg-primary-50">
-                                    <Link to="/contact">Contact Us</Link>
-                                </Button>
                             </div>
                         </div>
                     </div>
