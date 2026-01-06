@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { UsersRound, Calendar, LogOut, BarChart, Star } from "lucide-react";
+import { UsersRound, Calendar, LogOut, BarChart, Star, Menu, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -17,7 +17,9 @@ const ExpertDashboard = () => {
   const [expertServices, setExpertServices] = useState<any[]>([]);
   const [serviceDetails, setServiceDetails] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [revenueModalOpen, setRevenueModalOpen] = useState(false);
   const [expertData, setExpertData] = useState<any>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const token = localStorage.getItem("auth");
   const expert = JSON.parse(localStorage.getItem("expert") || "{}");
@@ -34,7 +36,7 @@ const ExpertDashboard = () => {
         },
       });
       const experts = await res.json();
-      const currentExpert = Array.isArray(experts) 
+      const currentExpert = Array.isArray(experts)
         ? experts.find((e: any) => e._id === expertId)
         : null;
       if (currentExpert) {
@@ -164,6 +166,63 @@ const ExpertDashboard = () => {
     setServiceDetails(null);
   };
 
+  // Profile Update Logic
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [updateFormData, setUpdateFormData] = useState({
+    name: "",
+    email: "",
+    mobile_no: "",
+    role: "",
+  });
+
+  const openProfileModal = () => {
+    if (expertData) {
+      setUpdateFormData({
+        name: expertData.name || "",
+        email: expertData.email || "",
+        mobile_no: expertData.mobile_no || "",
+        role: expertData.role || "",
+      });
+    }
+    setProfileModalOpen(true);
+  };
+
+  const handleUpdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateFormData({ ...updateFormData, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdatingProfile(true);
+    try {
+      const res = await fetch(`http://localhost:5000/expert/update/${expertId}`, { // Assuming endpoint exists
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updateFormData),
+      });
+
+      if (res.ok) {
+        const updatedExpert = await res.json();
+        setExpertData(updatedExpert);
+        // Update local storage if needed, or just rely on state
+        toast({ title: "Profile updated successfully" });
+        setProfileModalOpen(false);
+      } else {
+        toast({ title: "Failed to update profile" });
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({ title: "Error updating profile" });
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.clear();
@@ -192,11 +251,83 @@ const ExpertDashboard = () => {
             <span className="text-xl font-bold text-primary-600">Cyber</span>
             <span className="text-xl font-bold text-secondary-500">Bandhu</span>
           </div>
-          <span className="ml-4 text-sm bg-gray-200 px-2 py-1 rounded">Expert Panel</span>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" /> Logout
-          </Button>
+          <div className="hidden md:flex items-center gap-6"> {/* Increased gap */}
+            <div
+              className="bg-green-100 px-3 py-1.5 rounded-md cursor-pointer hover:bg-green-200 transition-colors flex items-center gap-2 border border-green-200"
+              onClick={() => setRevenueModalOpen(true)}
+            >
+              <BarChart className="h-4 w-4 text-green-700" />
+              <span className="text-sm font-bold text-green-800">Revenue: ₹{totalRevenue.toFixed(2)}</span>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openProfileModal}
+              className="flex items-center gap-2"
+            >
+              <UsersRound className="h-4 w-4" />
+              Profile
+            </Button>
+
+            <div className="flex items-center gap-4 border-l pl-4 border-gray-300">
+              <span className="text-sm bg-indigo-100 text-indigo-800 px-2 py-1 rounded font-medium">Expert Panel</span>
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                <LogOut className="h-4 w-4 mr-2" /> Logout
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg p-4 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200 z-50">
+            <div
+              className="bg-green-50 px-4 py-3 rounded-md cursor-pointer hover:bg-green-100 border border-green-200 flex items-center justify-between"
+              onClick={() => {
+                setRevenueModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <BarChart className="h-5 w-5 text-green-700" />
+                <span className="font-semibold text-green-800">My Revenue</span>
+              </div>
+              <span className="font-bold text-green-900">₹{totalRevenue.toFixed(2)}</span>
+            </div>
+
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                openProfileModal();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full justify-start h-12 text-base"
+            >
+              <UsersRound className="h-5 w-5 mr-3" />
+              My Profile
+            </Button>
+
+            <div className="border-t pt-4 mt-2">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <span className="text-sm font-medium text-gray-500">Currently logged in as</span>
+                <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded font-medium">Expert</span>
+              </div>
+              <Button variant="destructive" size="lg" onClick={handleLogout} className="w-full h-12 text-base">
+                <LogOut className="h-5 w-5 mr-3" /> Logout
+              </Button>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="container mx-auto px-4 py-8">
@@ -278,13 +409,12 @@ const ExpertDashboard = () => {
                             <td className="py-2">{new Date(booking.date).toLocaleString()}</td>
                             <td className="py-2">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  booking.status === "Confirmed"
-                                    ? "bg-green-100 text-green-800"
-                                    : booking.status === "Pending"
+                                className={`px-2 py-1 rounded-full text-xs ${booking.status === "Confirmed"
+                                  ? "bg-green-100 text-green-800"
+                                  : booking.status === "Pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-red-100 text-red-800"
-                                }`}
+                                  }`}
                               >
                                 {booking.status}
                               </span>
@@ -351,13 +481,12 @@ const ExpertDashboard = () => {
                             <td className="py-2">{new Date(booking.date).toLocaleString()}</td>
                             <td className="py-2">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  booking.status === "Confirmed"
-                                    ? "bg-green-100 text-green-800"
-                                    : booking.status === "Pending"
+                                className={`px-2 py-1 rounded-full text-xs ${booking.status === "Confirmed"
+                                  ? "bg-green-100 text-green-800"
+                                  : booking.status === "Pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-red-100 text-red-800"
-                                }`}
+                                  }`}
                               >
                                 {booking.status}
                               </span>
@@ -433,8 +562,8 @@ const ExpertDashboard = () => {
                             const completedOn = booking.solved_date
                               ? new Date(booking.solved_date).toLocaleDateString()
                               : booking.date
-                              ? new Date(booking.date).toLocaleDateString()
-                              : "-";
+                                ? new Date(booking.date).toLocaleDateString()
+                                : "-";
 
                             return (
                               <tr key={booking._id} className="border-b">
@@ -449,13 +578,12 @@ const ExpertDashboard = () => {
                                 <td className="py-2">{completedOn}</td>
                                 <td className="py-2">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs ${
-                                      booking.status === "done"
-                                        ? "bg-green-100 text-green-800"
-                                        : booking.status === "pending"
+                                    className={`px-2 py-1 rounded-full text-xs ${booking.status === "done"
+                                      ? "bg-green-100 text-green-800"
+                                      : booking.status === "pending"
                                         ? "bg-yellow-100 text-yellow-800"
                                         : "bg-red-100 text-red-800"
-                                    }`}
+                                      }`}
                                   >
                                     {booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : "-"}
                                   </span>
@@ -512,34 +640,33 @@ const ExpertDashboard = () => {
                   <div>
                     <p className="text-sm text-gray-600"><strong>Status:</strong></p>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs inline-block ${
-                        serviceDetails.status === "done"
-                          ? "bg-green-100 text-green-800"
-                          : serviceDetails.status === "pending"
+                      className={`px-2 py-1 rounded-full text-xs inline-block ${serviceDetails.status === "done"
+                        ? "bg-green-100 text-green-800"
+                        : serviceDetails.status === "pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : "bg-red-100 text-red-800"
-                      }`}
+                        }`}
                     >
                       {serviceDetails.status?.charAt(0).toUpperCase() + serviceDetails.status?.slice(1)}
                     </span>
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-600"><strong>Service:</strong></p>
                   <p>{serviceDetails.service_name}</p>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-600"><strong>Description:</strong></p>
                   <p>{serviceDetails.service_des}</p>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-600"><strong>Address:</strong></p>
                   <p>{serviceDetails.address}</p>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-600"><strong>Date:</strong></p>
                   <p>{new Date(serviceDetails.date).toLocaleString()}</p>
@@ -549,7 +676,7 @@ const ExpertDashboard = () => {
                 {serviceDetails.status === "done" && (
                   <div className="mt-6 pt-4 border-t border-gray-200">
                     <h3 className="text-lg font-semibold mb-3">Rating & Feedback</h3>
-                    
+
                     {/* Overall Expert Rating */}
                     {expertData && expertData.rating && parseFloat(expertData.rating) > 0 && (
                       <div className="mb-4 p-3 bg-blue-50 rounded-lg">
@@ -559,11 +686,10 @@ const ExpertDashboard = () => {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
-                                className={`h-5 w-5 ${
-                                  star <= parseFloat(expertData.rating || "0")
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
+                                className={`h-5 w-5 ${star <= parseFloat(expertData.rating || "0")
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                                  }`}
                               />
                             ))}
                           </div>
@@ -584,11 +710,10 @@ const ExpertDashboard = () => {
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
                                   key={star}
-                                  className={`h-5 w-5 ${
-                                    star <= parseFloat(serviceDetails.rating || "0")
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
+                                  className={`h-5 w-5 ${star <= parseFloat(serviceDetails.rating || "0")
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300"
+                                    }`}
                                 />
                               ))}
                             </div>
@@ -597,7 +722,7 @@ const ExpertDashboard = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         {serviceDetails.feedback && (
                           <div>
                             <p className="text-sm text-gray-600 mb-2"><strong>Feedback:</strong></p>
@@ -657,6 +782,128 @@ const ExpertDashboard = () => {
                   Close
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Revenue Split Modal */}
+        {revenueModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative animate-in fade-in zoom-in duration-200">
+              <button
+                className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl"
+                onClick={() => setRevenueModalOpen(false)}
+              >
+                ✕
+              </button>
+              <h2 className="text-xl font-bold mb-6 text-center text-gray-900">Revenue Breakdown</h2>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <span className="font-medium text-gray-600">Total Revenue</span>
+                  <span className="font-bold text-xl text-gray-900">₹{totalRevenue.toFixed(2)}</span>
+                </div>
+
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-gray-200"></div>
+                  <span className="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase">Split Details</span>
+                  <div className="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-100">
+                  <div>
+                    <span className="font-bold text-green-800 block">Expert Share</span>
+                    <span className="text-xs font-medium text-green-600 bg-green-200 px-2 py-0.5 rounded-full inline-block mt-1">80%</span>
+                  </div>
+                  <span className="font-bold text-2xl text-green-700">₹{(totalRevenue * 0.8).toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+                  <div>
+                    <span className="font-medium text-indigo-800 block">Platform Fee</span>
+                    <span className="text-xs font-medium text-indigo-600 bg-indigo-200 px-2 py-0.5 rounded-full inline-block mt-1">20%</span>
+                  </div>
+                  <span className="font-semibold text-lg text-indigo-700">₹{(totalRevenue * 0.2).toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="mt-8 flex justify-center">
+                <p className="text-xs text-gray-400 text-center">
+                  Payments are processed monthly. <br />Contact support for discrepancies.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Expert Profile Modal */}
+        {profileModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative animate-in fade-in zoom-in duration-200">
+              <button
+                className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl"
+                onClick={() => setProfileModalOpen(false)}
+              >
+                ✕
+              </button>
+              <h2 className="text-xl font-bold mb-6 text-gray-900 border-b pb-2">Update Profile</h2>
+
+              <form onSubmit={handleUpdateProfile} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={updateFormData.name}
+                    onChange={handleUpdateChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={updateFormData.email}
+                    onChange={handleUpdateChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                  <input
+                    type="text"
+                    name="mobile_no"
+                    value={updateFormData.mobile_no}
+                    onChange={handleUpdateChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Specialization/Role</label>
+                  <input
+                    type="text"
+                    name="role"
+                    value={updateFormData.role}
+                    onChange={handleUpdateChange}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end gap-3">
+                  <Button variant="outline" type="button" onClick={() => setProfileModalOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isUpdatingProfile} className="bg-indigo-600 hover:bg-indigo-700">
+                    {isUpdatingProfile ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
         )}
