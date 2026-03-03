@@ -179,20 +179,302 @@ app.post('/service',verifyToken, async (req, resp) => {
     }
 });
 
-//Update Service 
-app.put('/service/update/:id',verifyToken, async (req, resp) => {
-    if(req.body){
-        let result = await Service.updateOne(
-            { _id: req.params.id },
-            {
-                $set: req.body
+
+
+
+// Email to Expert when assigned a service
+const sendExpertAssignmentEmail = async (expertData, serviceData) => {
+    const mailOptions = {
+        from: `"${process.env.COMPANY_NAME || 'Cyber Bandhu'}" <${process.env.SENDER_EMAIL}>`,
+        to: expertData.email,
+        subject: 'New Service Assigned - Cyber Bandhu',
+        html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                    .content { background: #f9f9f9; padding: 25px; border-radius: 0 0 8px 8px; }
+                    .details { background: white; padding: 15px; border-radius: 6px; margin: 15px 0; }
+                    .detail-row { margin: 8px 0; }
+                    .label { font-weight: bold; color: #667eea; display: inline-block; width: 120px; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2 style="margin: 0;">🎯 New Service Assigned</h2>
+                    </div>
+                    <div class="content">
+                        <p>Hi ${expertData.name},</p>
+                        
+                        <p>You have been assigned a new service request.</p>
+                        
+                        <div class="details">
+                            <h3 style="color: #667eea; margin-top: 0;">Service Details:</h3>
+                            <div class="detail-row">
+                                <span class="label">Service:</span> ${serviceData.service_name}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Description:</span> ${serviceData.service_des || 'N/A'}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Date:</span> ${new Date(serviceData.date).toLocaleDateString('en-IN')}
+                            </div>
+                        </div>
+                        
+                        <div class="details">
+                            <h3 style="color: #667eea; margin-top: 0;">Customer Details:</h3>
+                            <div class="detail-row">
+                                <span class="label">Name:</span> ${serviceData.user_name}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Mobile:</span> ${serviceData.mobile_no}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Address:</span> ${serviceData.address || 'N/A'}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">City:</span> ${serviceData.city || 'N/A'}
+                            </div>
+                        </div>
+                        
+                        <p>Please login to your dashboard to view complete details and start working on this service.</p>
+                        
+                        <p style="margin-top: 25px;">Best regards,<br><strong>Cyber Bandhu Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>© ${new Date().getFullYear()} Cyber Bandhu | Your Digital Friend</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `,
+        text: `Hi ${expertData.name},
+
+You have been assigned a new service request.
+
+Service Details:
+- Service: ${serviceData.service_name}
+- Description: ${serviceData.service_des || 'N/A'}
+- Date: ${new Date(serviceData.date).toLocaleDateString('en-IN')}
+
+Customer Details:
+- Name: ${serviceData.user_name}
+- Mobile: ${serviceData.mobile_no}
+- Address: ${serviceData.address || 'N/A'}, ${serviceData.city || 'N/A'}
+
+Please login to your dashboard to view complete details.
+
+Best regards,
+Cyber Bandhu Team
+
+© ${new Date().getFullYear()} Cyber Bandhu`
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Expert assignment email sent:', info.messageId);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('Expert email error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+// Email to User when expert is assigned
+const sendUserExpertAssignedEmail = async (serviceData, expertData) => {
+    const mailOptions = {
+        from: `"${process.env.COMPANY_NAME || 'Cyber Bandhu'}" <${process.env.SENDER_EMAIL}>`,
+        to: serviceData.email,
+        subject: 'Expert Assigned to Your Service - Cyber Bandhu',
+        html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                    .content { background: #f9f9f9; padding: 25px; border-radius: 0 0 8px 8px; }
+                    .details { background: white; padding: 15px; border-radius: 6px; margin: 15px 0; }
+                    .detail-row { margin: 8px 0; }
+                    .label { font-weight: bold; color: #667eea; display: inline-block; width: 120px; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2 style="margin: 0;">✓ Expert Assigned</h2>
+                    </div>
+                    <div class="content">
+                        <p>Hi ${serviceData.user_name},</p>
+                        
+                        <p>Good news! An expert has been assigned to your service request.</p>
+                        
+                        <div class="details">
+                            <h3 style="color: #667eea; margin-top: 0;">Your Expert:</h3>
+                            <div class="detail-row">
+                                <span class="label">Name:</span> ${expertData.name}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Mobile:</span> ${expertData.mobile_no}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Rating:</span> ⭐ ${expertData.rating}/5
+                            </div>
+                        </div>
+                        
+                        <div class="details">
+                            <h3 style="color: #667eea; margin-top: 0;">Service Details:</h3>
+                            <div class="detail-row">
+                                <span class="label">Service:</span> ${serviceData.service_name}
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Date:</span> ${new Date(serviceData.date).toLocaleDateString('en-IN')}
+                            </div>
+                        </div>
+                        
+                        <p>Your expert will contact you shortly to confirm the appointment.</p>
+                        
+                        <p style="margin-top: 25px;">Thanks,<br><strong>Cyber Bandhu Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>© ${new Date().getFullYear()} Cyber Bandhu | Your Digital Friend</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `,
+        text: `Hi ${serviceData.user_name},
+
+Good news! An expert has been assigned to your service request.
+
+Your Expert:
+- Name: ${expertData.name}
+- Mobile: ${expertData.mobile_no}
+- Rating: ${expertData.rating}/5
+
+Service Details:
+- Service: ${serviceData.service_name}
+- Date: ${new Date(serviceData.date).toLocaleDateString('en-IN')}
+
+Your expert will contact you shortly to confirm the appointment.
+
+Thanks,
+Cyber Bandhu Team
+
+© ${new Date().getFullYear()} Cyber Bandhu`
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('User notification email sent:', info.messageId);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('User email error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+
+// Update Service with email notifications
+app.put('/service/update/:id', verifyToken, async (req, resp) => {
+    try {
+        if (!isValidObjectId(req.params.id)) {
+            return resp.status(400).send({ result: 'Invalid service ID format' });
+        }
+        
+        if (!req.body) {
+            return resp.status(400).send({ result: 'Please enter details' });
+        }
+        
+        // Fetch the service before updating
+        const service = await Service.findById(req.params.id);
+        if (!service) {
+            return resp.status(404).send({ result: 'Service not found' });
+        }
+        
+        // Check if expert_id is being added (assignment)
+        const isExpertAssignment = req.body.expert_id && 
+                                   (!service.expert_id || service.expert_id === '');
+        
+        // Update the service
+        const result = await Service.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true, runValidators: true }
+        );
+        
+        // Send emails if expert is assigned
+        if (isExpertAssignment) {
+            try {
+                // Fetch expert details
+                const expert = await Expert.findById(req.body.expert_id).select("-password");
+                
+                if (expert) {
+                    // Send email to expert
+                    const expertEmailResult = await sendExpertAssignmentEmail(expert, result);
+                    
+                    // Send email to user
+                    const userEmailResult = await sendUserExpertAssignedEmail(result, expert);
+                    
+                    if (expertEmailResult.success && userEmailResult.success) {
+                        console.log('Both notification emails sent successfully');
+                        return resp.send({ 
+                            success: true, 
+                            result,
+                            message: 'Service updated and notifications sent to expert and user'
+                        });
+                    } else {
+                        console.warn('Some emails failed to send');
+                        return resp.send({ 
+                            success: true, 
+                            result,
+                            message: 'Service updated but some notifications failed',
+                            emailStatus: {
+                                expertEmail: expertEmailResult.success,
+                                userEmail: userEmailResult.success
+                            }
+                        });
+                    }
+                } else {
+                    console.warn('Expert not found for email notification');
+                    return resp.send({ 
+                        success: true, 
+                        result,
+                        message: 'Service updated but expert not found for notification'
+                    });
+                }
+            } catch (emailError) {
+                console.error('Error sending notification emails:', emailError);
+                return resp.send({ 
+                    success: true, 
+                    result,
+                    message: 'Service updated but notification emails failed',
+                    emailError: emailError.message
+                });
             }
-        )
-        resp.send(result);
-    }else{
-        resp.send({ result: 'Please enter details' });
+        }
+        
+        // If not an expert assignment, just return the update result
+        resp.send({ success: true, result });
+        
+    } catch (err) {
+        console.error('Error updating service:', err);
+        resp.status(500).send({ 
+            result: 'Update failed', 
+            error: err.message 
+        });
     }
 });
+
+
+
 
 //get one service details by id
 app.get('/service/details/:id',verifyToken, async (req, resp) => {
@@ -211,20 +493,129 @@ app.get('/service/details/:id',verifyToken, async (req, resp) => {
   }
 });
 
-//Update Query  
-app.put('/query/update/:id',verifyToken, async (req, resp) => {
-    if(req.body){
-        let result = await Query.updateOne(
-            { _id: req.params.id },
-            {
-                $set: req.body
+
+// Shorter email sending function
+const sendQueryResolvedEmail = async (queryData) => {
+    const mailOptions = {
+        from: `"${process.env.COMPANY_NAME || 'Cyber Bandhu'}" <${process.env.SENDER_EMAIL}>`,
+        to: queryData.email,
+        subject: 'Your Query Has Been Resolved - Cyber Bandhu',
+        html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                    .content { background: #f9f9f9; padding: 25px; border-radius: 0 0 8px 8px; }
+                    .status-badge { display: inline-block; background: #10b981; color: white; 
+                                   padding: 5px 15px; border-radius: 20px; font-size: 14px; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2 style="margin: 0;">✓ Query Resolved</h2>
+                    </div>
+                    <div class="content">
+                        <p>Hi ${queryData.f_name},</p>
+                        
+                        <p>Your query "<strong>${queryData.query_name}</strong>" has been resolved.</p>
+                        
+                        <p><span class="status-badge">Resolved</span></p>
+                        
+                        <p>Need more help? <a href="http://localhost:3000/contact" style="color: #667eea;">Contact us</a></p>
+                        
+                        <p style="margin-top: 25px;">Thanks,<br><strong>Cyber Bandhu Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>© ${new Date().getFullYear()} Cyber Bandhu | Your Digital Friend</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `,
+        text: `Hi ${queryData.f_name},
+
+Your query "${queryData.query_name}" has been resolved.
+
+Need more help? Visit: http://localhost:3000/contact
+
+Thanks,
+Cyber Bandhu Team
+
+© ${new Date().getFullYear()} Cyber Bandhu`
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent:', info.messageId);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('Email error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+app.put('/query/update/:id', verifyToken, async (req, resp) => {
+    try {
+        if (!isValidObjectId(req.params.id)) {
+            return resp.status(400).send({ result: 'Invalid query ID format' });
+        }
+        
+        if (!req.body) {
+            return resp.status(400).send({ result: 'Please enter details' });
+        }
+        
+        // Fetch the query before updating to get email details
+        const query = await Query.findById(req.params.id);
+        if (!query) {
+            return resp.status(404).send({ result: 'Query not found' });
+        }
+        
+        // Update the query
+        const result = await Query.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true }
+        );
+        
+        // Send email if status changed to 'done'
+        if (req.body.status === 'done' && query.status !== 'done') {
+            const emailResult = await sendQueryResolvedEmail(result);
+            
+            if (emailResult.success) {
+                console.log('Notification email sent to:', result.email);
+                return resp.send({ 
+                    success: true, 
+                    result,
+                    message: 'Query updated and email notification sent successfully'
+                });
+            } else {
+                console.error('Failed to send email notification:', emailResult.error);
+                return resp.send({ 
+                    success: true, 
+                    result,
+                    message: 'Query updated but email notification failed',
+                    emailError: emailResult.error
+                });
             }
-        )
-        resp.send(result);
-    }else{
-        resp.send({ result: 'Please enter details' });
+        }
+        
+        // If status is not 'done', just return the update result
+        resp.send({ success: true, result });
+        
+    } catch (err) {
+        console.error('Error updating query:', err);
+        resp.status(500).send({ 
+            result: 'Update failed', 
+            error: err.message 
+        });
     }
 });
+
 
 //Query from landing page
 app.post('/query',verifyToken, async (req, resp) => {
@@ -320,6 +711,9 @@ app.get('/service/all', verifyToken, async (req, resp) => {
         resp.send({ result: 'no record found' });
     }
 });
+
+
+
 //Get all active Experts
 app.get('/expert/active', verifyToken, async (req, resp) => {
     let result = await Expert.find({ status:'active' });
