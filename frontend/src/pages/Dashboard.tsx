@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { History, MapPin, Loader2, CheckCircle, Calendar, Clock, CheckCircle2 } from "lucide-react";
+import { History, MapPin, Loader2, CheckCircle, Calendar, Clock, CheckCircle2, Menu, X, UsersRound, LogOut } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 const UserDashboard = () => {
@@ -19,6 +19,7 @@ const UserDashboard = () => {
   const [user, setUser] = useState<any>(storedUser);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Service request form state - only fields user fills now
   const [serviceForm, setServiceForm] = useState({
@@ -208,7 +209,7 @@ const UserDashboard = () => {
 
       const newHistoryEntry = {
         service_id: serviceResult._id,
-        expert_id: "", 
+        expert_id: "",
         date: serviceForm.date,
         service_name: serviceForm.service_name,
         status: "pending",
@@ -287,13 +288,14 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50 flex flex-col">
       {/* Header */}
+      {/* Header */}
       <header className="bg-white shadow-md border-b-2 border-primary-100">
         <div className="container mx-auto px-4 py-5 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">User Dashboard</h1>
-            <p className="text-sm text-gray-600 mt-1">Welcome, {user.name || "User"}</p>
+            <h1 className="text-2xl font-bold text-gray-900">Hello, {user.name || "User"}!</h1>
+            <p className="text-sm text-gray-600 mt-1">Welcome to your dashboard</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3">
             <Button
               variant="outline"
               size="lg"
@@ -303,16 +305,75 @@ const UserDashboard = () => {
               <History className="h-5 w-5" />
               <span className="hidden sm:inline">History</span>
             </Button>
-            <Button 
-              variant="ghost" 
+
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={openProfileModal}
+              className="flex items-center gap-2 border-primary-300 hover:bg-primary-50 text-primary-700"
+            >
+              <span className="hidden sm:inline">Profile</span>
+            </Button>
+
+            <Button
+              variant="ghost"
               size="lg"
               onClick={handleLogout}
-              className="hover:bg-red-50 hover:text-red-600"
+              className="hover:bg-red-50 hover:text-red-600 ml-2"
             >
               Logout
             </Button>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg p-4 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200 z-50">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                navigate("/user/history");
+                setMobileMenuOpen(false);
+              }}
+              className="w-full justify-start h-12 text-base"
+            >
+              <History className="h-5 w-5 mr-3" />
+              History
+            </Button>
+
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                openProfileModal();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full justify-start h-12 text-base"
+            >
+              <UsersRound className="h-5 w-5 mr-3" />
+              Profile
+            </Button>
+
+            <div className="border-t pt-4 mt-2">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <span className="text-sm font-medium text-gray-500">Currently logged in as</span>
+                <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded font-medium">{user.name || "User"}</span>
+              </div>
+              <Button variant="destructive" size="lg" onClick={handleLogout} className="w-full h-12 text-base">
+                <LogOut className="h-5 w-5 mr-3" /> Logout
+              </Button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main content */}
@@ -471,8 +532,8 @@ const UserDashboard = () => {
                 </Label>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl transition-all"
               >
                 Submit Service Request
@@ -481,24 +542,7 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Buttons for profile modals */}
-        <div className="mt-8 flex flex-wrap gap-4 justify-center">
-          <Button 
-            onClick={openProfileModal}
-            size="lg"
-            className="h-12 px-6 text-base font-semibold bg-gray-700 hover:bg-gray-800 text-white"
-          >
-            View Profile
-          </Button>
-          <Button 
-            onClick={openUpdateModal} 
-            variant="outline"
-            size="lg"
-            className="h-12 px-6 text-base font-semibold border-2 border-primary-500 text-primary-700 hover:bg-primary-50"
-          >
-            Update Profile
-          </Button>
-        </div>
+
       </main>
 
       {/* <Footer /> */}
@@ -518,7 +562,19 @@ const UserDashboard = () => {
             <div className="space-y-4">
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Name</p>
-                <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+                <div className="flex justify-between items-center">
+                  <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      closeProfileModal();
+                      openUpdateModal();
+                    }}
+                    className="text-primary-600 h-auto p-0"
+                  >
+                    Edit Profile
+                  </Button>
+                </div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Email</p>
@@ -546,7 +602,7 @@ const UserDashboard = () => {
               )}
             </div>
             <div className="mt-6 flex justify-end">
-              <Button 
+              <Button
                 onClick={closeProfileModal}
                 size="lg"
                 className="h-12 px-8 text-base font-semibold bg-primary-600 hover:bg-primary-700"
@@ -696,15 +752,15 @@ const UserDashboard = () => {
               </div>
 
               <div className="flex justify-end gap-4 mt-6 pt-4 border-t">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={closeUpdateModal}
                   size="lg"
                   className="h-12 px-8 text-base font-semibold"
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   type="submit"
                   size="lg"
                   className="h-12 px-8 text-base font-semibold bg-primary-600 hover:bg-primary-700"
