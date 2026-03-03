@@ -15,6 +15,10 @@ const AdminDashboard = () => {
   const [pendingQueryData, setPendingQueryData] = useState<any[]>([]);
   const [expert, setExpert] = useState<any[]>([]);
   const [allServices, setAllServices] = useState<any[]>([]);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [serviceDetails, setServiceDetails] = useState<any>(null);
+  const [expertModalOpen, setExpertModalOpen] = useState(false);
+  const [selectedExpert, setSelectedExpert] = useState<any>(null);
 
   const token = localStorage.getItem("auth") || "";
 
@@ -105,6 +109,27 @@ const AdminDashboard = () => {
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0);
 
+  // Calculate expert ratings from services
+  const expertRatings: Record<string, { total: number; count: number }> = {};
+  allServices.forEach(service => {
+    if (service.expert_id && service.rating && service.rating !== "0") {
+      const rating = parseFloat(service.rating);
+      if (!isNaN(rating)) {
+        if (!expertRatings[service.expert_id]) {
+          expertRatings[service.expert_id] = { total: 0, count: 0 };
+        }
+        expertRatings[service.expert_id].total += rating;
+        expertRatings[service.expert_id].count += 1;
+      }
+    }
+  });
+
+  const getExpertRating = (expertId: string) => {
+    const data = expertRatings[expertId];
+    if (!data || data.count === 0) return "N/A";
+    return (data.total / data.count).toFixed(1);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
@@ -163,6 +188,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="bookings">Pending Services</TabsTrigger>
             <TabsTrigger value="query">Pending Query</TabsTrigger>
             <TabsTrigger value="assistants">Digital Experts</TabsTrigger>
+            <TabsTrigger value="pending_experts">Pending by Experts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings">
@@ -199,13 +225,12 @@ const AdminDashboard = () => {
                             <td className="py-2">{new Date(booking.date).toLocaleString()}</td>
                             <td className="py-2">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  booking.status === "Confirmed"
-                                    ? "bg-green-100 text-green-800"
-                                    : booking.status === "Pending"
+                                className={`px-2 py-1 rounded-full text-xs ${booking.status === "Confirmed"
+                                  ? "bg-green-100 text-green-800"
+                                  : booking.status === "Pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-red-100 text-red-800"
-                                }`}
+                                  }`}
                               >
                                 {booking.status}
                               </span>
@@ -297,13 +322,12 @@ const AdminDashboard = () => {
                             <td className="py-2">{new Date(booking.date).toLocaleString()}</td>
                             <td className="py-2">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  booking.status === "Confirmed"
-                                    ? "bg-green-100 text-green-800"
-                                    : booking.status === "Pending"
+                                className={`px-2 py-1 rounded-full text-xs ${booking.status === "Confirmed"
+                                  ? "bg-green-100 text-green-800"
+                                  : booking.status === "Pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-red-100 text-red-800"
-                                }`}
+                                  }`}
                               >
                                 {booking.status}
                               </span>
@@ -398,11 +422,18 @@ const AdminDashboard = () => {
                             <td className="py-2">
                               <div className="flex items-center">
                                 <span className="text-yellow-500">★</span>
-                                <span className="ml-1">{assistant.rating}</span>
+                                <span className="ml-1">{getExpertRating(assistant._id)}</span>
                               </div>
                             </td>
                             <td className="py-2">
-                              <Button variant="link" size="sm">
+                              <Button
+                                variant="link"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedExpert(assistant);
+                                  setExpertModalOpen(true);
+                                }}
+                              >
                                 View Profile
                               </Button>
                             </td>
@@ -415,8 +446,268 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="pending_experts">
+            <Card>
+              <CardHeader>
+                <CardTitle>Pending by Experts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[300px]">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="py-2 text-left font-medium">Service Name</th>
+                          <th className="py-2 text-left font-medium">User Name</th>
+                          <th className="py-2 text-left font-medium">Assigned Expert</th>
+                          <th className="py-2 text-left font-medium">Date</th>
+                          <th className="py-2 text-left font-medium">Status</th>
+                          <th className="py-2 text-left font-medium">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allServices
+                          .filter((service) => service.status === "pending" && service.expert_id)
+                          .map((service) => {
+                            const assignedExpert = expert.find((e) => e._id === service.expert_id);
+                            return (
+                              <tr key={service._id} className="border-b">
+                                <td className="py-2">{service.service_name}</td>
+                                <td className="py-2">{service.user_name}</td>
+                                <td className="py-2 font-medium text-indigo-600">
+                                  {assignedExpert ? assignedExpert.name : "Unknown Expert"}
+                                </td>
+                                <td className="py-2">{new Date(service.date).toLocaleDateString()}</td>
+                                <td className="py-2">
+                                  <span className="px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
+                                    In Progress
+                                  </span>
+                                </td>
+                                <td className="py-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setServiceDetails(service);
+                                      setViewModalOpen(true);
+                                    }}
+                                  >
+                                    View Details
+                                  </Button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        {allServices.filter((service) => service.status === "pending" && service.expert_id).length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="py-4 text-center text-gray-500">No services currently pending with experts.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        {/* View Details Modal */}
+        {viewModalOpen && serviceDetails && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <h2 className="text-xl font-bold text-gray-900">Service Details</h2>
+                  <button
+                    onClick={() => setViewModalOpen(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Service Info */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-3 border-b pb-2">Service Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Service Name</p>
+                        <p className="font-medium">{serviceDetails.service_name}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Status</p>
+                        <span className="px-2 py-0.5 rounded-full text-xs bg-orange-100 text-orange-800 font-medium">
+                          In Progress / Pending
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-sm text-gray-500">Description</p>
+                        <p className="font-medium">{serviceDetails.service_des}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Requested Date</p>
+                        <p className="font-medium">{new Date(serviceDetails.date).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User Info */}
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <h3 className="font-semibold text-gray-900 mb-3 border-b border-blue-200 pb-2">User Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Name</p>
+                        <p className="font-medium">{serviceDetails.user_name}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="font-medium">{serviceDetails.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Mobile</p>
+                        <p className="font-medium">{serviceDetails.mobile_no}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Address</p>
+                        <p className="font-medium text-sm">{serviceDetails.address}, {serviceDetails.city}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expert Info */}
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                    <h3 className="font-semibold text-gray-900 mb-3 border-b border-green-200 pb-2">Assigned Expert Details</h3>
+                    {(() => {
+                      const assignedExpert = expert.find(e => e._id === serviceDetails.expert_id);
+                      if (assignedExpert) {
+                        return (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Name</p>
+                              <p className="font-medium text-green-900">{assignedExpert.name}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Email</p>
+                              <p className="font-medium text-green-900">{assignedExpert.email}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Mobile</p>
+                              <p className="font-medium text-green-900">{assignedExpert.mobile_no}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Rating</p>
+                              <div className="flex items-center text-green-900 font-medium">
+                                <span className="text-yellow-500 mr-1">★</span>
+                                {getExpertRating(assignedExpert._id)}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        return <p className="text-red-500 font-medium">Expert details not found.</p>;
+                      }
+                    })()}
+                  </div>
+
+                </div>
+
+                <div className="mt-8 flex justify-end">
+                  <Button onClick={() => setViewModalOpen(false)}>Close</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
+
+      {/* Expert Profile Modal */}
+      {expertModalOpen && selectedExpert && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+            <div className="relative">
+              <div className="h-24 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-t-lg"></div>
+              <div className="px-6 pb-6">
+                <div className="relative flex justify-between items-end -mt-12 mb-4">
+                  <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center">
+                    <span className="text-4xl font-bold text-indigo-600 uppercase">
+                      {selectedExpert.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div className="mb-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${selectedExpert.verified ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {selectedExpert.verified ? 'Verified Expert' : 'Unverified'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedExpert.name}</h2>
+                  <p className="text-gray-500">{selectedExpert.role || "Digital Assistant"}</p>
+                  <div className="flex items-center justify-center mt-2 text-yellow-500">
+                    <span className="text-lg font-bold mr-1">{getExpertRating(selectedExpert._id)}</span>
+                    <span className="text-sm text-gray-400">Rating</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+                      <span className="text-xl">@</span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Email Address</p>
+                      <p className="font-medium text-gray-900">{selectedExpert.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
+                      <span className="text-xl">📞</span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Phone Number</p>
+                      <p className="font-medium text-gray-900">{selectedExpert.mobile_no || "N/A"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                      <span className="text-xl">📍</span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Location/Area</p>
+                      <p className="font-medium text-gray-900">{selectedExpert.address || "N/A"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mr-4">
+                      <span className="text-xl">♀️</span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Gender</p>
+                      <p className="font-medium text-gray-900">{selectedExpert.gender || "N/A"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <Button className="w-full" onClick={() => setExpertModalOpen(false)}>Close</Button>
+                </div>
+              </div>
+              <button
+                onClick={() => setExpertModalOpen(false)}
+                className="absolute top-2 right-2 text-white hover:text-gray-200 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
