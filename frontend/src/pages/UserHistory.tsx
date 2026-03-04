@@ -37,7 +37,7 @@ const UserHistory = () => {
   // Fetch user history
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/cyber-bandhu/user/${user._id}`, {
+      const res = await fetch(`http://65.20.81.114:5000/user/${user._id}`, {
         headers: { authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -55,7 +55,7 @@ const UserHistory = () => {
           historyData.map(async (entry: any) => {
             try {
               const serviceRes = await fetch(
-                `http://65.20.81.114:5000/cyber-bandhu/service/details/${entry.service_id}`,
+                `http://65.20.81.114:5000/service/details/${entry.service_id}`,
                 {
                   headers: { authorization: `Bearer ${token}` },
                 }
@@ -153,7 +153,7 @@ const UserHistory = () => {
       }
 
       const res = await fetch(
-        `http://65.20.81.114:5000/cyber-bandhu/service/update/${serviceId}`,
+        `http://65.20.81.114:5000/service/update/${serviceId}`,
         {
           method: "PUT",
           headers: {
@@ -218,7 +218,7 @@ const UserHistory = () => {
       }
 
       const res = await fetch(
-        `http://65.20.81.114:5000/cyber-bandhu/service/update/${serviceId}`,
+        `http://65.20.81.114:5000/service/update/${serviceId}`,
         {
           method: "PUT",
           headers: {

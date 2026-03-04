@@ -207,7 +207,7 @@ const JoinUs = () => {
 
 
         try {
-            const response = await fetch("http://65.20.81.114:5000/cyber-bandhu/expert/register", {
+            const response = await fetch("http://65.20.81.114:5000/expert/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

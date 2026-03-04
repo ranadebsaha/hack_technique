@@ -24,7 +24,7 @@ const UpdateServicePage = () => {
     if (!id) return;
     const fetchService = async () => {
       try {
-        const res = await fetch(`http://65.20.81.114:5000/cyber-bandhu/expert/pending-service/${id}`, {
+        const res = await fetch(`http://65.20.81.114:5000/expert/pending-service/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -65,7 +65,7 @@ const UpdateServicePage = () => {
         solved_date: form.solved_date,
         solved_time: form.solved_time,
       };
-      const res = await fetch(`http://65.20.81.114:5000/cyber-bandhu/service/update/${id}`, {
+      const res = await fetch(`http://65.20.81.114:5000/service/update/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(updatePayload),
@@ -77,7 +77,7 @@ const UpdateServicePage = () => {
         setLoading(false);
         return;
       }
-      const userRes = await fetch(`http://65.20.81.114:5000/cyber-bandhu/user/${service[0].user_id}`, {
+      const userRes = await fetch(`http://65.20.81.114:5000/user/${service[0].user_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!userRes.ok) {
@@ -95,7 +95,7 @@ const UpdateServicePage = () => {
         return entry;
       });
 
-      const userUpdateRes = await fetch(`http://65.20.81.114:5000/cyber-bandhu/user/${service[0].user_id}`, {
+      const userUpdateRes = await fetch(`http://65.20.81.114:5000/user/${service[0].user_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ history: updatedHistory }),
