@@ -32,10 +32,10 @@ const AdminLogin = () => {
     setIsLoading(true);
     setError("");
 
-    let loginEndpoint = "http://localhost:5000/admin/login";
+    let loginEndpoint = "http://65.20.81.114:5000/cyber-bandhu/admin/login";
     let loginRole = role;
     if (role === "expert") {
-      loginEndpoint = "http://localhost:5000/expert/login";
+      loginEndpoint = "http://65.20.81.114:5000/cyber-bandhu/expert/login";
       loginRole = "expert";
     }
 

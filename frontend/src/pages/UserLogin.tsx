@@ -31,7 +31,7 @@ const UserLogin = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://65.20.81.114:5000/cyber-bandhu/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
