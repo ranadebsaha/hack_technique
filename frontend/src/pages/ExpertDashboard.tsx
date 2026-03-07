@@ -30,7 +30,7 @@ const ExpertDashboard = () => {
     if (!expertId) return;
     try {
       // Since we don't have a single expert endpoint, we'll fetch from expert/all and find our expert
-      const res = await fetch(`http://65.20.81.114:5000/expert/all`, {
+      const res = await fetch(`/api/expert/all`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -51,7 +51,7 @@ const ExpertDashboard = () => {
   const getExpertServices = async () => {
     if (!expertId) return;
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/expert/${expertId}`, {
+      const res = await fetch(`/api/service/expert/${expertId}`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -66,7 +66,7 @@ const ExpertDashboard = () => {
 
   const getPendingServices = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/pending`, {
+      const res = await fetch(`/api/service/pending`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -82,7 +82,7 @@ const ExpertDashboard = () => {
   const getMyPendingServices = async () => {
     if (!expertId) return;
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/pending/${expertId}`, {
+      const res = await fetch(`/api/service/pending/${expertId}`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -111,7 +111,7 @@ const ExpertDashboard = () => {
 
   const fetchServiceDetails = async (id: string) => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/details/${id}`, {
+      const res = await fetch(`/api/service/details/${id}`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -135,7 +135,7 @@ const ExpertDashboard = () => {
       return;
     }
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/update/${serviceId}`, {
+      const res = await fetch(`/api/service/update/${serviceId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -196,7 +196,7 @@ const ExpertDashboard = () => {
     e.preventDefault();
     setIsUpdatingProfile(true);
     try {
-      const res = await fetch(`http://65.20.81.114:5000/expert/update/${expertId}`, { // Assuming endpoint exists
+      const res = await fetch(`/api/expert/update/${expertId}`, { // Assuming endpoint exists
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

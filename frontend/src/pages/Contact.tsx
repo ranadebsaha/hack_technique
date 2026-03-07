@@ -30,7 +30,7 @@ const Contact = () => {
 
     setIsSubmitting(true);
     try {
-      let result = await fetch("http://65.20.81.114:5000/query", {
+      let result = await fetch("/api/query", {
         method: "POST",
         body: JSON.stringify({ f_name, l_name, mobile_no, email, query_name, query_des }),
         headers: { "Content-Type": "application/json" },

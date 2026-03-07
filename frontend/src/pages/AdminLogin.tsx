@@ -32,10 +32,10 @@ const AdminLogin = () => {
     setIsLoading(true);
     setError("");
 
-    let loginEndpoint = "http://65.20.81.114:5000/admin/login";
+    let loginEndpoint = "/api/admin/login";
     let loginRole = role;
     if (role === "expert") {
-      loginEndpoint = "http://65.20.81.114:5000/expert/login";
+      loginEndpoint = "/api/expert/login";
       loginRole = "expert";
     }
 

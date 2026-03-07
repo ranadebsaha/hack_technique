@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
   const getPendingServices = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/pending`, {
+      const res = await fetch(`/api/service/pending`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
 
   const getPendingQuery = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/query/pending`, {
+      const res = await fetch(`/api/query/pending`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
 
   const getActiveExperts = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/expert/active`, {
+      const res = await fetch(`/api/expert/active`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
 
   const getAllServices = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/service/all`, {
+      const res = await fetch(`/api/service/all`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
                                   const newStatus = (form.elements.namedItem("status") as HTMLSelectElement).value;
                                   try {
                                     const res = await fetch(
-                                      `http://65.20.81.114:5000/service/update/${booking._id}`,
+                                      `/api/service/update/${booking._id}`,
                                       {
                                         method: "PUT",
                                         headers: {
@@ -340,7 +340,7 @@ const AdminDashboard = () => {
                                   const newStatus = (form.elements.namedItem("status") as HTMLSelectElement).value;
                                   try {
                                     const res = await fetch(
-                                      `http://65.20.81.114:5000/query/update/${booking._id}`,
+                                      `/api/query/update/${booking._id}`,
                                       {
                                         method: "PUT",
                                         headers: {

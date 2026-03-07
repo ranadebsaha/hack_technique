@@ -59,7 +59,7 @@ const UserRegister = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://65.20.81.114:5000/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

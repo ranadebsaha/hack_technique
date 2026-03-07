@@ -46,7 +46,7 @@ const UserDashboard = () => {
   // Fetch fresh user profile
   const fetchUserProfile = async () => {
     try {
-      const res = await fetch(`http://65.20.81.114:5000/user/${user._id}`, {
+      const res = await fetch(`/api/user/${user._id}`, {
         headers: { authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -194,7 +194,7 @@ const UserDashboard = () => {
         serviceBody.location = serviceForm.location;
       }
 
-      const resService = await fetch("http://65.20.81.114:5000/service", {
+      const resService = await fetch("/api/service", {
         method: "POST",
         headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
         body: JSON.stringify(serviceBody),
@@ -217,7 +217,7 @@ const UserDashboard = () => {
 
       const updatedHistory = [...(user.history || []), newHistoryEntry];
 
-      const resUserUpdate = await fetch(`http://65.20.81.114:5000/user/${user._id}`, {
+      const resUserUpdate = await fetch(`/api/user/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
         body: JSON.stringify({ history: updatedHistory }),
@@ -265,7 +265,7 @@ const UserDashboard = () => {
   const submitProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://65.20.81.114:5000/user/${user._id}`, {
+      const res = await fetch(`/api/user/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
         body: JSON.stringify(updateForm),
