@@ -1,0 +1,29 @@
+name: Deploy Cyber Bandhu to Vultr
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute Deployment Commands on Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/ranadeb/projects/cyber_bandhu
+            git pull origin main
+            
+            cd frontend
+            npm install
+            npm run build
+
+            cd ../backend
+            npm install
+            pm2 restart cyber-api
